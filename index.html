@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout : une colonne mobile-first (formulaire terrain), barre d'action fixe en bas ; le rapport est une feuille A4 blanche. */
+:root {
+  --bg: #EEF3F1; --surface: #FFFFFF; --fg: #16211E; --muted: #5A6B66; --line: #D6E0DC;
+  --accent: #06796B; --accent-ink: #FFFFFF; --accent-soft: #DDEFEB;
+  --warn: #A24E07; --warn-soft: #FBEEDF; --bad: #B42318; --bad-soft: #FCE9E7; --ok: #1D7A3B;
+  --admin: #5B4BA8; --admin-soft: #ECE9F8;
+  /* Feuille de rapport : toujours papier blanc, comme le PDF */
+  --paper: #FFFFFF; --paper-ink: #1E2624; --paper-muted: #6B7775; --paper-zebra: #F2F7F5; --paper-line: #DCE5E2; --brand: #06796B;
+  --font: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-cond: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  --font-paper: Arial, Helvetica, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1413; --surface: #17211F; --fg: #E4EDEA; --muted: #98AAA5; --line: #2A3A36;
+  --accent: #3DB5A3; --accent-ink: #04211C; --accent-soft: #12332D;
+  --warn: #F0A35A; --warn-soft: #3A2814; --bad: #F2877C; --bad-soft: #3B1C19; --ok: #6FD08E;
+  --admin: #B3A8F0; --admin-soft: #27224A; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0E1413; --surface: #17211F; --fg: #E4EDEA; --muted: #98AAA5; --line: #2A3A36;
+  --accent: #3DB5A3; --accent-ink: #04211C; --accent-soft: #12332D;
+  --warn: #F0A35A; --warn-soft: #3A2814; --bad: #F2877C; --bad-soft: #3B1C19; --ok: #6FD08E;
+  --admin: #B3A8F0; --admin-soft: #27224A; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.45; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface) }
+button, input, select, textarea { font: inherit; color: inherit }
+button { cursor: pointer }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px }
+.num { font-variant-numeric: tabular-nums }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line) }
+.top-in { max-width: 820px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 10px; display: flex; flex-direction: column; gap: 10px }
+.brandrow { display: flex; align-items: center; gap: 10px; justify-content: space-between }
+.logo-chip { background: #FFFFFF; border-radius: 6px; padding: 4px 8px; display: flex; align-items: center }
+.logo-chip img { height: 26px; width: auto; display: block }
+.appname { display: flex; align-items: center; gap: 10px } .appname b { font-family: var(--font-cond); font-size: 22px; letter-spacing: .02em; color: var(--accent) }
+.pill { font-family: var(--font-cond); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 600; white-space: nowrap }
+.trames { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px }
+.trames button { flex: 0 0 auto; border: 1px solid var(--line); background: var(--bg); padding: 7px 12px; border-radius: 8px; font-weight: 600; font-size: 14px; white-space: nowrap }
+.trames button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.modes { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px }
+.modes button { border: 0; background: transparent; padding: 8px; border-radius: 7px; font-weight: 600; font-size: 15px; color: var(--muted) }
+.modes button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 3px rgba(0,0,0,.12) }
+
+.wrap { max-width: 820px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 140px; display: flex; flex-direction: column; gap: 14px }
+.intro { font-size: 14.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
+.intro strong { color: var(--fg) }
+.intro-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap }
+.linkbtn { border: 0; background: none; color: var(--accent); font-weight: 600; padding: 4px 0; text-decoration: underline; text-underline-offset: 3px }
+
+.sec { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden }
+.sec > h2 { margin: 0; font-family: var(--font-cond); font-weight: 600; font-size: 17px; letter-spacing: .05em; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 8px; text-wrap: balance }
+.sec > h2 .count { font-family: var(--font); text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--muted) }
+.sec > h2 .count.done { background: var(--accent-soft); color: var(--accent) }
+.sec-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 14px }
+.sec.admin-sec > h2 { color: var(--admin) }
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0 }
+.field > label, .field > .lbl { font-weight: 600; font-size: 15px; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap }
+.req { color: var(--bad); font-weight: 700 }
+.tag { font-family: var(--font-cond); font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding: 1px 7px; border-radius: 4px; font-weight: 600 }
+.tag.admin { background: var(--admin-soft); color: var(--admin) }
+.tag.calc { background: var(--accent-soft); color: var(--accent) }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+@media (max-width: 360px) { .grid2 { grid-template-columns: 1fr } }
+
+.inp { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 17px }
+textarea.inp { min-height: 96px; resize: vertical }
+.inp:focus { border-color: var(--accent); background: var(--surface) }
+.unitbox { position: relative }
+.unitbox .inp { padding-right: 52px }
+.unitbox .u { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; pointer-events: none }
+.calcout { min-height: 48px; display: flex; align-items: center; padding: 10px 12px; border-radius: 8px; border: 1px dashed var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 700; font-size: 17px }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px }
+.chip { position: relative; display: inline-flex }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer }
+.chip span { padding: 10px 14px; min-height: 44px; display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-weight: 500 }
+.chip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600 }
+.chip input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px }
+
+/* Photos */
+.photos { display: flex; flex-direction: column; gap: 8px }
+.photo-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap }
+.photo-count { font-size: 14px; font-weight: 600; color: var(--muted) }
+.photo-count.ok { color: var(--ok) }
+.photo-count.ko { color: var(--warn) }
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px }
+.thumb { position: relative; border-radius: 8px; overflow: hidden; background: var(--bg); border: 1px solid var(--line) }
+.thumb img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block }
+.r-photos img { background: #FFFFFF }
+.thumb .kb { position: absolute; left: 4px; bottom: 4px; font-size: 11px; background: rgba(0,0,0,.6); color: #fff; padding: 1px 5px; border-radius: 4px }
+.thumb .x { position: absolute; right: 4px; top: 4px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; font-size: 16px; line-height: 1 }
+.addphoto { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px dashed var(--accent); color: var(--accent); font-weight: 600; background: transparent }
+.addphoto input { position: absolute; inset: 0; opacity: 0; cursor: pointer }
+
+/* Façades */
+.facade { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--surface) }
+.facade.st-exclu { border-style: dashed; opacity: .85 }
+.facade-head { display: flex; gap: 8px; align-items: center }
+.facade-head .inp { font-weight: 700 }
+.iconbtn { flex: 0 0 auto; width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-size: 18px; color: var(--muted) }
+.iconbtn:hover { color: var(--bad); border-color: var(--bad) }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px }
+.seg .chip span { width: 100%; justify-content: center; padding: 8px 6px; min-height: 40px; font-size: 15px }
+.seg .chip { display: flex }
+.seg.two { grid-template-columns: repeat(2, 1fr) }
+.seg .chip.s-exclu input:checked + span { background: var(--bad); border-color: var(--bad); color: #fff }
+.seg .chip.s-option input:checked + span { background: #2F62B5; border-color: #2F62B5; color: #fff }
+.fsum { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14.5px; padding: 8px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--fg) }
+.fsum b { color: var(--accent) }
+.fsum.err { background: var(--bad-soft) }
+.fsum.err b { color: var(--bad) }
+.ouv-title { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center }
+.ouv-grid { display: grid; grid-template-columns: 74px 52px minmax(0,1fr) minmax(0,1fr) 40px; gap: 6px; align-items: center }
+.ouv-grid .h { font-size: 12px; color: var(--muted); font-family: var(--font-cond); letter-spacing: .05em; text-transform: uppercase }
+.ouv-grid .inp { min-height: 44px; padding: 8px; font-size: 16px; text-align: center }
+.ouv-grid select.inp { text-align: left; padding: 8px 4px }
+.ouv-grid .iconbtn { width: 40px; height: 40px; font-size: 16px }
+.ouv-s { grid-column: 1 / -1; font-size: 13px; color: var(--muted); margin-top: -2px; padding-left: 2px }
+.ghost { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; min-height: 44px; padding: 8px 14px; font-weight: 600; color: var(--accent) }
+
+.totals { border: 2px solid var(--accent); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--surface) }
+.totals h3 { margin: 0 0 2px; font-family: var(--font-cond); font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent) }
+.trow { display: flex; justify-content: space-between; gap: 10px; font-size: 15.5px }
+.trow span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap }
+.trow.big { font-size: 18px; border-top: 1px solid var(--line); padding-top: 6px }
+.trow.big span:last-child { color: var(--accent); font-weight: 700 }
+.trow.sub { color: var(--muted); font-size: 14px }
+.formula { font-size: 12.5px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 6px; margin-top: 2px }
+
+/* Barre d'action */
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line); padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.ab-in { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 12px }
+.prog { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted) }
+.bar { height: 8px; border-radius: 99px; background: var(--bg); border: 1px solid var(--line); overflow: hidden }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s }
+.primary { border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 700; padding: 12px 18px; border-radius: 10px; min-height: 48px; font-size: 16px; white-space: nowrap }
+
+.panel { border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; font-size: 15px }
+.panel h3 { margin: 0; font-size: 16px }
+.panel ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px }
+.panel.ko { background: var(--warn-soft); border: 1px solid var(--warn) }
+.panel.ko h3 { color: var(--warn) }
+.panel.okp { background: var(--accent-soft); border: 1px solid var(--accent) }
+.panel.okp h3 { color: var(--accent) }
+.saved { font-size: 13px; color: var(--muted) }
+
+/* ===== Rapport (feuille) ===== */
+.sheet-wrap { overflow-x: auto; margin-inline: -4px; padding: 4px }
+.sheet { background: var(--paper); color: var(--paper-ink); font-family: var(--font-paper); font-size: 11.5px; line-height: 1.4; max-width: 794px; margin: 0 auto; padding: 36px 34px 28px; box-shadow: 0 2px 14px rgba(0,0,0,.14); border-radius: 2px; display: flex; flex-direction: column; gap: 12px }
+@media (max-width: 520px) { .sheet { padding: 22px 16px 18px; font-size: 10.5px } }
+.r-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 2px solid var(--brand); margin-bottom: 6px }
+.r-head img { width: 170px; max-width: 45%; height: auto }
+.r-head .rt { text-align: right; display: flex; flex-direction: column; gap: 3px; margin-left: auto }
+.r-head .rt b.t { color: var(--brand); font-size: 17px; letter-spacing: .01em }
+.r-head .rt .s { color: var(--paper-muted) }
+.r-sec { display: flex; flex-direction: column }
+.r-sec > .hb { background: var(--brand); color: #fff; font-weight: 700; padding: 6px 10px; text-transform: uppercase; font-size: 11.5px }
+.r-tab { width: 100%; border-collapse: collapse }
+.r-tab td, .r-tab th { padding: 6px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--paper-line) }
+.r-tab tr:nth-child(even) td { background: var(--paper-zebra) }
+.r-tab td:first-child { font-weight: 700; width: 40% }
+.r-tab.data td:first-child { font-weight: 400; width: auto }
+.r-tab.data th { background: var(--paper-zebra); font-size: 10.5px; color: var(--paper-ink); border-bottom: 2px solid var(--brand) }
+.r-tab.data td.n, .r-tab.data th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap }
+.r-tab tr.hl td { background: #DFF0EC; color: var(--brand); font-weight: 700 }
+.r-tab .calcmark { color: var(--brand); font-size: 9.5px; font-weight: 700; margin-left: 4px }
+.r-scroll { overflow-x: auto }
+.r-cap { color: var(--brand); font-weight: 700; padding: 10px 10px 4px }
+.r-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px; background: #F4F7F6; border: 1px solid var(--paper-line) }
+.r-photos figure { margin: 0; display: flex; flex-direction: column; gap: 4px; align-items: center }
+.r-photos img, .r-photos .ph { width: 100%; aspect-ratio: 4/3; object-fit: contain; display: block }
+.r-photos img { background: #FFFFFF }
+.r-photos .ph { background: repeating-linear-gradient(45deg, #EDF2F0 0 8px, #E4EBE8 8px 16px); display: flex; align-items: center; justify-content: center; color: var(--paper-muted); font-size: 10px; text-align: center; padding: 6px }
+.r-photos figcaption { color: var(--paper-muted); font-style: italic; font-size: 10px; text-align: center }
+.r-box { border: 1.5px solid var(--brand); background: #EAF5F2; padding: 9px 12px; display: flex; flex-direction: column; gap: 3px }
+.r-box .big { color: var(--brand); font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap }
+.r-box.warnb { border-color: #C46A12; background: #FDF1E4 }
+.r-box.warnb .big { color: #9A4E06 }
+.r-note { color: var(--paper-muted); font-size: 10px }
+.r-text { padding: 8px 10px; white-space: pre-wrap }
+.r-sign { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px }
+.r-sign div { min-height: 64px; border-bottom: 1px solid var(--paper-line) }
+.r-foot { border-top: 1px solid var(--paper-line); padding-top: 8px; text-align: center; color: var(--paper-muted); font-size: 9.5px }
+.admin-note { font-size: 14px; color: var(--muted) }
+.btnrow { display: flex; flex-wrap: wrap; gap: 8px }
+.copybox { width: 100%; min-height: 120px; font-size: 12px; font-family: ui-monospace, Menlo, monospace }
+.defs { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 6px; font-size: 14.5px; background: var(--bg) }
+.defs b.s-inclus { color: var(--accent) } .defs b.s-option { color: #2F62B5 } .defs b.s-exclu { color: var(--bad) }
+.hint { font-size: 14px; color: var(--muted); margin-top: -4px }
+.aide { font-size: 14px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 8px 10px }
+.warnline { font-size: 14px; color: var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 8px 10px }
+.r-disclaimer { border: 1.5px solid #B42318; background: #FCECEA; color: #7A1A12; padding: 8px 12px; font-weight: 700; font-size: 11px }
+.r-box .warn { color: #9A4E06; font-size: 10px; font-weight: 700 }
+
+@media (prefers-reduced-motion: reduce) { .bar i { transition: none } }
+
+[hidden] { display: none !important }
+body { margin: 0 } img { max-width: 100% }
+.pill.p-ok { background: var(--accent-soft); color: var(--accent) } .pill.p-ko { background: var(--bad-soft); color: var(--bad) } .pill.p-wait { background: var(--warn-soft); color: var(--warn) }
+.visitbar { display: flex; align-items: center; gap: 10px } .vt-nom { font-family: var(--font-cond); font-size: 17px; letter-spacing: .03em }
+.h1 { font-family: var(--font-cond); font-size: 24px; letter-spacing: .02em }
+.choix { display: grid; gap: 10px }
+.carte { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: var(--fg); width: 100% }
+.carte b { font-size: 17px } .carte:hover { border-color: var(--accent) }
+#liste { display: flex; flex-direction: column; gap: 10px }
+.ligne .l1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline }
+.st { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); white-space: nowrap }
+.st.st-ok { background: var(--accent-soft); color: var(--accent) }
+.vide { border: 1px dashed var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 6px; color: var(--muted) } .vide b { color: var(--fg) }
+a.primary, a.ghost { text-decoration: none; display: inline-flex; align-items: center }
+form.field { gap: 10px }
+table.r-head { width: 100%; border-collapse: collapse; border-bottom: 2px solid var(--brand) } table.r-head td { vertical-align: top; padding-bottom: 14px }
+table.r-head .rt { text-align: right; line-height: 1.7 } table.r-head .t { color: var(--brand); font-size: 17px } table.r-head .s { color: var(--paper-muted) }
+table.r-photos { display: table; width: 100%; border-collapse: separate; border-spacing: 8px; padding: 0 } table.r-photos td { width: 50%; text-align: center; vertical-align: top }
+table.r-photos .fig img, table.r-photos .ph { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #FFFFFF; display: block }
+table.r-photos .cap { color: var(--paper-muted); font-style: italic; font-size: 10px; padding-top: 3px }
+table.big { width: 100%; border-collapse: collapse } table.big td { color: var(--brand); font-weight: 700; font-size: 14px; padding: 1px 0 } table.big td.bn { text-align: right; white-space: nowrap }
+.warnb table.big td { color: #9A4E06 }
+.st.st-new { background: #E3ECFB; color: #2F62B5 } .st.st-ko { background: var(--bad-soft); color: var(--bad) }
+.panel.mission { background: var(--surface); border: 2px solid var(--accent); gap: 10px } .panel.mission .l1 { display: flex; justify-content: space-between; align-items: center; gap: 8px }
+.panel.mission h3 { color: var(--accent) } details summary { cursor: pointer; list-style: none } details[open] summary { margin-bottom: 8px }
+.sous { border-left: 3px solid var(--accent-soft); padding-left: 12px; display: flex; flex-direction: column; gap: 12px }
+.merci { text-align: center; align-items: center; padding: 32px 18px } .merci b { font-size: 20px; color: var(--accent) }
+select.inp { appearance: auto }
+canvas.sig { width: 100%; height: 170px; border: 2px dashed var(--accent); border-radius: 10px; background: #FFFFFF; touch-action: none; display: block }
+.sig-ok { display: flex; flex-direction: column; gap: 4px } .sig-ok img { max-height: 110px; width: auto; align-self: flex-start; background: #FFFFFF; border: 1px solid var(--line); border-radius: 8px; padding: 4px }
+table.r-sign-ok td { height: auto; border-bottom: 0; vertical-align: top }
+table.r-sign { display: table; padding: 0; width: 100%; border-collapse: separate; border-spacing: 12px } table.r-sign td { height: 64px; vertical-align: top; border-bottom: 1px solid var(--paper-line); width: 50% }
+</style>
+</head><body>
+<header class="top">
+  <div class="top-in">
+    <div class="brandrow">
+      <div class="appname"><div class="logo-chip"><img id="logoTop" alt="GESTRAC"></div><b>VisiTrac</b></div>
+      <span class="pill p-ok" id="etat" hidden>Enregistré dans le Drive</span>
+    </div>
+    <nav class="trames" id="onglets" hidden aria-label="Menu"></nav>
+    <div class="visitbar" id="visitbar" hidden></div>
+    <div class="modes" role="group" aria-label="Affichage" id="modes" hidden>
+      <button id="mSaisie" aria-pressed="true">Saisie terrain</button>
+      <button id="mRapport" aria-pressed="false">Aperçu du rapport</button>
+    </div>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div class="actionbar" id="actionbar" hidden>
+  <div class="ab-in">
+    <div class="prog"><span id="progTxt">—</span><div class="bar"><i id="progBar"></i></div></div>
+    <button class="primary" id="btnSend">Vérifier la visite</button>
+  </div>
+</div>
+<script src="config.js"></script>
+<script>
+/* Affiche à l'écran toute erreur qui empêcherait VisiTrac de démarrer */
+window.addEventListener('error', function (e) {
+  var m = document.getElementById('main'); if (!m) return;
+  m.innerHTML = '<div style="background:#FCE9E7;color:#B42318;border:1px solid #B42318;border-radius:10px;padding:14px;font:15px Arial,sans-serif">'
+    + '<b>VisiTrac n\'a pas pu démarrer.</b><br>Envoie une capture de ce message à Claude :<br><code style="word-break:break-all">'
+    + String(e.message || e).replace(/</g, '&lt;') + (e.lineno ? ' (ligne ' + e.lineno + ')' : '') + '</code></div>';
+});
+</script>
+<script>
+(function () {
+const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAdQAAABxCAYAAABsgVKFAAA0PUlEQVR42u29eVyP2f///7h6V9OQyiClmihbaSVEGFKJGFuTrcg+Y0lhrEOmyFIihbGNrfdQ1rE0UckWok1NtAqVFO+xziJNz98f30/9Qq/X67pevV6t5367XX/U63mW65xzncc55zrneXFEBAaDwWAwGDVDgRUBg8FgMBhMUBkMBoPBYILKYDAYDAYTVAaDwWAwGExQGQwGg8GQJYqsCITz/M+39L78X5SVl0NPvSXHSoTBYDAYTFDFcDH7Pt14mIv4xw+QUVKMojevPrH5xy+EFRSDwWAwmKB+zIGEm3Tq92TE5GSgrLycFQiDwWAwmKDypejNK9pwKRI/J9zA+3//ZQXCYDAYDCaoQnj+51vadOUidt+6hn/K3rPWwGAwGAwmqELZfDWK/C9fxMt//matgMFgMBhMUIVy5UE2zTp+GI9e/sFqn8FgMBhMUKVhwa9htCv+Gqt1BoPBYDBBlYYnr1/RxF/24tbjPFbjDAaDwWCCKg0pT/Jp9MGfqj1DymAwGAwGE1QeJD/Jp2H7gvHi779YTTdhnjx5Qq9fv8arV6/w/v17qKmpQV1dHfr6+szLFUNq0tPT6Z9//kGPHj0abTvKzs6mZ8+eQUlJCRoaGlBXV4empiZ7bpqaoDIxlSwyN27cQEFBAd68eVNr6TZv3hwmJiZwcHCQy0OZmJhI165dQ1xcHGJjY/G///1PnDkBgImJCUxNTWFiYgJzc3M4OTlJlbfc3Fy6ceMG8vPz8W89Ps+sra0NCwsLWFlZ8brP6Ohoys3NxbNnz0BENU6f4zioqqpCTU0NGhoaaNmyJQYNGtRgOmlPT08KCgr6oB3NmDEDvr6+0NLSanBi8+zZM7pw4QIiIyORnZ2NkpISPHz4UOxz06FDB1hYWMDExATdu3fHqFGjmMgC4GTxgNQ38l+9oD4hG/H8z7dyT+sfv5AG15BCQkJoxYoVtSqkH9OjRw9ERETIZLRbUlJCe/fuxd69e5GXV/P35BoaGhg/fjymTJkCa2trXvnz8fEhb2/vBtUOnJ2dcezYMZH3l5GRQdOmTcPNmzdrJT8GBgawsrKCjY0NJk6ciNatW9erZ6ukpIRsbW2Rnp5e7e+dOnVCVFRUg1j5SEpKolOnTiEqKgrx8fEyidPR0RHOzs4YOXJkvas7Jqg1oFfwekotKqyVtBqaoJ48eZLGjh1bL/Iyffp07N27V+ryy87OprVr1+LQoUNyy6O5uTm8vb0xevRokfm8ePEiDRkypEE+Kz4+Pli1alW192ZmZkZpaWl1lrcJEyZgwYIF6N27d714xoYMGUIXL14Ua2NtbY2bN2/W2z4hOTmZvL29cfbsWbmloaysjNmzZ2PlypVo27ZtkxLWRvf5thH7t9eamDZEfvzxx3qTlzNnzkgddvHixWRmZiZXMQWAu3fvYsyYMbC3t6f09PRqR5/nz59vsO1BVN5/+eWXOhVTADhy5Aisra2xZs2aOh/1R0ZGShRTALh16xbCwsLq3SwlNTWVxowZQ927d5ermAJAaWkpgoOD0bFjR6xYsaLxzdiaiqAGx8VSVPZ9ppriH6x6k5dnz54JDpOQkEDt2rWjzZs3459//qm1vEZHR8PExASBgYGfdBAFBQUNtj08evSo2v9nZWXVq0Ggvb09PX/+vM46540bN/K2XbduXb2q4/Xr15O5uTlOnTpVq+m+ffsW69evh7m5OWVnZzcJYW00gppQ8IiW/3YKDNHk5+fXq0bdpUsXQfa3bt0iBwcHFBUV1VmeFy1ahNDQ0A/KUVdXt8G2CX19fUFCW1dER0djxIgRdZL27du36fLly7zt09LScO7cuXrxrI0fP55WrFhR54P4OXPmsBlqQ2LBr2Hsc2sS+PPPP+tVfiZPnszbNi4ujoYOHYoXL17Ueb59fHw++Hv48OENtk04OTlV+/+ysrJ6l9dbt27B0dGx1oVqy5YtgsN8tAu41ikoKCBra2sKCwurNwOitLS0Rj9LbRSCujv+GiUWPmaK2YBYuHAhVqxYwXvDwjfffIOXL1/Wi7xnZ2d/8Le9vT3X0Hb4AoCLi4vIDUn1lQsXLmD9+vW11jHn5eXR8ePHpRKQ1NTUOhGQwsJC6tOnj8x278qKO3fuNPp+rVGcQ/0x6hxTKBmyb98+GBgYyCVuVVVV3ucfK/D09CShy7y6uroYOnQo7O3t0aFDB7Ru3Rrt27fnKkbvz58/xx9//IHi4mI8f/4ceXl5OHnypNRLnWvWrOHc3NxqfA718OHDnwg2n1myEISeQxXHuXPn0Lx5c972L1++RGFhIQoLC/HkyRPk5ubi+vXrgtLctGkTZs6cSbVxNCM4OFjq2bq/vz8OHz5c68+vm5ub1O/1NTQ0MGDAAGhra6Ndu3Zo27YttLW1oaKigsLCQjx79gzZ2dm4d+8ebty4wTrLj2jwx2b8r1ykVRfO1Fn6DenYTEZGBhkZGUm0S05OhoWFRb24r+zsbOrcuTNv+06dOmH16tVwdXWVKv+XLl2in3/+Gf/9739F2gwZMgSRkZFyKR97e3uKjo4Wa6OkpITS0lK51o+bmxuFhoZKtCOiGucjLS2NNm/ejCNHjqC0tJRXmHnz5iE4OFjubVRNTY2kPa+tqKiIhw8fQkdHp9aepSVLlpC/v7/gcObm5pg9eza+++47QXkNDw+nw4cPIzIyUuLA4/79++jatWujPkbT4Jd8d9y4woZFjRghx2JmzZqFrKwsTloxBQBbW1suNDSUS0pKwrBhwz75XV1dHYGBgaxiZIipqSl34MABLjs7G6amprzChISEyD1fGzdupJo4PykrK5Pq/au0nD17VrCYWllZISYmBikpKZxQMQUAFxcX7uzZs9y9e/fE7olwcXFp9GLa4AV1d/w1Yk7vGzd8N1V4eXlh165dMntgLS0tufPnz3OpqalYuXIlhg4dipkzZ+L69eswNjZmbtbkwJdffslFRkZCS0uLl310dLRcl9eCg4PF/j5y5EiMHDlSfB+1e3etlZ/QnbTffPMN7ty5w9na2ta4PXfq1Ik7ePAgd+/ePUyaNOmTdMLCwprEM9OgBfVYaiLrhRox165dIz7vEzt27IjAwEC5PLCmpqbc2rVruYiICG737t2ciYkJE1M50q5dO27VqlW8bGNiYuS5MkKFheIdxHz77bf49ttvxdq8efMG/v7+cn+vFhQURELem/74448IDw+XeVs2MjLiQkNDOSLirl+/jvz8fLmkwwRVxuS9+B9dy8thPVAj5vbt27zsFi1axAqrETFnzhyuWbNmEu1E+dSVBQEBAWJ/NzQ0hKOjI+fo6MhJ2pdQG0doNmzYwNvW09MTq1evlrvI2djYcLq6usz1YEMgNPEW63kaOSUlJbzs+vfvzwqrkcHHN/Lz58/lknZUVJREt4vz5s37YKYqjsLCQhw+fFhus9TAwEB6+vQpL9sOHTpgy5YtbJWFCeqHnLmXymqvkcPXNWG3bt1YB9HI4HNsS16CunXrVrG/N2vWDJ6enpVtzsPDg1NTUxMbRpqdt7KaTVelNt/pMkFtIDz/8y2lPWUO8Bs77969Y4XQRGnTpo1EG3l4zcrMzKSIiAixNtXtZpXk9SstLQ1RUVEyn6VGR0fzPqM9bdo02NnZscEnE9QPSSkqYDXXBPjiiy942d24cYNYaTUu/vrrL4k2fHcDC4HPTHL+/Pmf/O+7776TGE4e71KvXOF/bPD7779nDYsJ6qdkFBexmmsCtGrVipcdW8ZqfPBZ7tfT05NpmiUlJSTJs9GgQYOqPTZlbGzMOTg4iA17/vx5ZGZmynTwx1dQO3fu3CTOgTJBlYL8Vy9YzTUB+Hh1AoCDBw/i4sWLbJbaiEhKSpJo8+WXX8o0zW3btkn01DR79myRv/GZpW7atEmmeY6Li+NlN3r0aNaomKBWT8Grl6zmmgBfffUVb9vp06fj/PnzTFQbARkZGcTHsbusBXXHjh0SZ8Tjxo0TOcsbNWoUZ2hoKDaO0NBQlJSUyKSdRkREUDnPL2yJ+qoQgwkqXv79F6u5JoCWlhZnYWHBb5BVUIDhw4dj9OjRlJyczIS1AcP3+50DBw6UWZohISEkaZPTzJkzJcYza9Yssb+XlpbK7F3qvXv3+D5H6N+/P1vuZYLKaOpMnTpVkP3p06fRvXt3tGvXjtzc3Ojw4cOUkZHBBLaBEBwcTKdOnZJoZ2Fhgb59+8pMJCT5BlZWVuYlqEuWLJHolGLnzp0yyfP//vc/XnZ8/SMzao4iKwLZcu3atTrrvLt27Yo2bdrUuJOxtLQEAJnfR7du3eDk5ISNGzfyzqOHhwe3fft2ysrKEpRWUVERQkNDUfHFlLZt21LPnj1hZWUFKysrODk5sRF7PSInJ4cCAwN5i41Qv7XiOHHiBGVmZoq1+eabb6ClpcWrzUycOBF79+4V+fuLFy8QHBxM8+fPr1Eb5CuofHfLM5ig1jsGDBhQZ2mHhoZ+4pi6PpGeno709HRkZmbS6dOneXcmBw4cQN++fWuUdnFxMc6dO4dz5yq/nUsdO3ZEz5490adPH9jb27NdkLVMSUkJpaSkYPfu3Thx4gTvcBoaGpg5c6bM6kqSIwdA/Gak6sRenKACwJYtW6o9fiMPQW3ZsiVrbExQGY2VX3/9FampqWRmZsarU+zTpw93+PBhcnNzk/WsCDk5OThy5AgAoGPHjuTk5IQRI0Zg8ODBTFx5sHLlSlJRURG0cpCZmYn09HQUFxdLleb27dtllv+4uDiS9IFzCwsLQe8gLS0tua+++orEHWnJy8tDeHg4ubi4SN3O+AqqhoYGa6hMUBmNmXv37sHMzIy3vaurK9esWTMaO3as3PKUk5ODoKAgBAUFQVNTk5ydnbFkyRLo6+szcRWBn59fbQs4Jk6cKLP62LZtm0SbuXPnCo539uzZEs+I+vv7w8XFhc1QGxFsUxKjTmjRooXgMGPGjOGuX78OExMTueevpKQEO3bsQPv27fHDDz+wTU31gNGjR2Pt2rUyE9O8vDw6fvy4WJtWrVphxowZgtOcMGECp6urK9YmISEBV69elbpt8fEmBQCfffYZazxMUBmNGb7HYT7GxsaGS0tL444cOSJohlsT1q1bhy5dutCdO3eYsNYBysrKWLNmDU6ePCnTlYKtW7dC0jlOobvMq8JnV3BNjtDw+cQdIL+PCDCYoDLqAatXr4aOjk6NOsfx48dzd+/e5S5evIhx48bJPc9ZWVno1asXfvrpJyaqtYilpSVu374Nb29vmS+779+/X3znqKAg8dNs4pg9ezaUlZXF2pw+fRp5eXlStSlVVVVedny/2sSoOQ3yHarG581YzVXDv//+K5N4+vTpg+bNm8s0b0pKSmjfvj1GjBiBoUOHyqxztLe35+zt7REcHEznzp1DZGQkLl68iJcvX8qljL/77jsoKyvTtGnT2HtVOWJsbIzJkydj6dKlcinn9evX05s3b8TaODk5wdDQUOr027Zty7m4uFDF0a3qKC8vR0BAgFQbrZigMkGVCbrqGqzmqoHvB7klsWPHDlhYWDQowWjTpg03derUyiW6hIQEunPnDlJSUpCQkMDLNyxfpk+fDjMzM7KysmKiKkN69OiBESNGYPTo0eC7A1xa+AhYTWanVeMQJ6gVM2VpBJXv13bYki8TVLHoqdffXWtEJJeOoHv37pScnCzWhjnA/v+xsrLirKysPvjf1atXKTExEYmJiYiJicHTp0+ljt/Hxwdnzpxp8uW8YsUKiDo2U1paiuLiYhQXFyMuLk7irtTExEQUFxejtLQUWlpapKmpKZdnaf/+/VRYKP57yoaGhhg2bFiN07exseEsLCwoJSVFpM3ff/8NX19fWrVqlaD0JPkNlvVAm9FIBbVrW+0mV1EPHjyQXJmK7BSUOAYMGMBVdbxx/fp1Onv2LM6ePYv79+8Liuvs2bN4+PAhtW/fvknPUtetW8f7/n/99Vfy8/PD7du3RdoUFBTAz88PR48eRWRkJHXq1Enm5btlyxaJNrL0xOTh4YFp06aJtQkJCcGqVasExduxY0dedkK9jDGkp0FuSjLV0mlSlVRSUkKvXr2SaMd31x/j/9GvXz9u48aN3L1797iYmBgMGTJEUPhjx46xQhTAyJEjufj4eM7T05PXAHLgwIFIS0uT6SawyMhISktLk2i3aNEicBxHsrgkiWnFLHL37t2C7rVTp0687MrLy3H48GG2mY4JavW0VW3BfanRdPxTihvRV0UWfnybKra2tlxkZCQXHR0taJbKkGqGyNna2kq0e/Lkicx3cMvqSy/yIDAwUJB97969Ob6D6PPnz7OGxwRVTAfYsUuTqaSLFy9KtBHi/o0hmsGDB3OSNpFUcPPmTVZgUvLzzz/zcu5x//59eHl5yWR2dffuXYqMjKy3ZZKZmYkzZ84IutdBgwbxsvvtt99Yo2OCKpoJFr2aTCXxcRzer18/1pplxKRJkzgjIyOJdmVlZaywpERfX59buXIlL9utW7fWyKNQ1XjqO0Jn0Pb29rzsXr9+jbCwMLbsywS1er4y6MR1aNmq0VfQpUuX6MmTJzIbqTL40asXvwHbw4cPWSclJUuXLuU6dOjAy9bLy6tGaRUWFtIvv/zSEJ53CPHIxVdQAeD7779njY4JqmgmW/Vp9BW0efNmXnZ83kkx+KOpqcnLrqnv8q0pq1ev5mWXlJSEI0eOSD14CQkJQWlpaYMoEyEzaWNjY47vpw3z8/NltnzOaISCunyQI6eu8nmjrZzr169TREQEn04d1tbWrGOXIbdu3ZJoI8mtHEMy7u7uXPfu3XnZrlmzRup0du3a1WDKJDw8XJA7QiEzz23btiExMZGJqpxo8AcX5/UdiHWXGucL9wULFvCyq4kDb0b1xMfHS7The7CeIR4/Pz84OjpKtMvKysK2bdvIw8ND0OAxODiYXrx4IdZGVVUV1tbWtda2xLk9LCsrQ3BwMO9dv6NGjZLoPKKC8vJyjB49GmfOnKGG5g2NCWotsMrOidsVf42e//m2UVXMsWPHiK+7vMYsqKtXr6aQkBBoaGhg7Nix8PT0rLFjfUksXbqU+CwP2tjYsB5EBgwZMoRzcHAgPrvZ/fz84OHhISh+Po4cJk+ejO3bt9eKwHh5eZGkZd29e/cKOkYTGBjI+7VPfn4+Bg0ahPDwcLK3t5fLPW/atIni4+Px2WefYdy4cRg5cmSTEO9G8bWZ1XZOjapSsrOzacaMGbxs3dzcoKen1ygb65QpU8jX1xcvXrxAXl4eAgICoKurCy8vLyopKZHLstX+/ftp06ZNvGxr8nFoxofw3StQXFyMVatW8a778PBwysvLk2gnzUfEpWX+/PlQUBDf9b558wYbN27kfZ+DBg3i3NzceOfh5cuXcHBwwMGDB2X6HK1fv560tbVp6dKlOHnyJI4cOYJRo0bB39+/SSwzNwpBndW7P9dVU6vRVMrQoUPx+vVrXrbLly9vlA3zzp07dOjQoWp/27p1KwwNDbF48WJKSUmR2YMaFhbGy6sNALRr1w7yGt03RUxMTDh3d3detlu3bgXfAZW/v79EGzs7OxgbG9daXRoYGHBOTpInAcHBwUJnhdDQ0BAUxt3dHXZ2dnT06FGpn6O8vDxatWoVaWpq0ooVK6r1kb1kyRL8/vvvjV5UG833UA+Oc4cC1/D7NwcHB8rNzeVl6+rqCiMjo0bZqV+5ckXs72/fvsXmzZthaWkJc3NzWrduHUm72eLUqVM0duxYGj9+PO8wtTmjaSqsXbuWl4OSt2/f8todfO3aNUpISJBoJ4uvygiFj6/gwsJCQTNILS0tTtI3XqsjJiYGEyZMQPv27WndunUUFxdHqamplJeXR8+ePaNq8kVRUVHk7+9PAwcOJAMDA6xdu1biZ+LCw8MbfRvmiBrPoGFl5K+0+WpUrab5j1+IzATN0dGRLly4wMtWQ0MDL168EJR2RkYG8XFYII/voVagqqqKbt26Yc6cOWjXrh0npnMloc7CK+jduzcsLS3Rrl07kTa5ublISEhAenq64PgtLCyQnJwsl4GMvb09SXJ/qKSkhNLSUrkOpNzc3IiPxyhZf11p2bJltHHjRol2ioqKSE9PR+fOnUWm7+zsTJKcoujq6iI/P79OBqVGRkaUkZEh1sbU1BSpqamC8hcQEED18czpvHnzEBwc3KhXdRrV50nWOY7kLmSl0+9PnzSofKenp9OYMWMEfRUiICBAbvmRt0u906dPY9u2bbhy5QpZWlpW+4BZWlpKHX98fDyvXbpSPTCKijhw4ACbTsqJDRs2cHv37iVJn3orKyvD8uXLRXoRy8vLo1OnTslkpihPgZk3b55Ym7S0NFy4cIGGDBnCW4gWL17MvXv3jn744Yd6Vbft27dv9O1XobHd0Bn3udBuod5g8vvTTz+RiYmJIDEdNmwYpk+fLnikJ2kjRG3y5s0brFixQuTvTk5OnLGxcb2qKxUVFYSHh8Pc3Jy9O5UjfIXg5MmTuHfvXrVLbMHBwSgvL5cYx/Tp0+vsPufOncvxeee5Y8cOwXGvXLmS27t3b7155lVUVODs7MwEtaHRTk2dOzdtLr5o1rxe5zMvL4+GDBlC3333naBwWlpaOHjwoFRpilseqwvu3Lkj9vfQ0FBoadWPzWZqamo4d+4cRo8eLdcyVFJSkmjz2Wefyf1+6/Lbup6enlznzp152e7evbva//OZnU6ZMgXy+og5X/gceZPWsf306dO5iIgI3l6/5MnOnTuhr6/f6AeiCo3xprq1bcednzYPLT+vf98HDQ0NJTs7OzIwMOD1FZmPCQ8PR+vWraVumAYGBvWmLCQt61laWnK3b9/GqFGj6jSfZmZmuHz5MgYPHiz3DoGPb1u+H5aWdz50dOT3XWK+XpFycnI++V9RURE9fPhQYlhJy621AZ88vH//HhEREVJtdhkyZAiXmJiI/v3718n9de3aFTExMXB3d2fnUBsylu30uIjp8+tcVFNTU2nnzp00ceJEatGiBbm5uSEmJkaquI4dO4b+/fvXqGHWp7OTfGYhenp63KlTp7hz587B3Ny81vPo7e2Nu3fvcqLe9coaPmLJ98PS8s5Hly7y+4TihAkTeB0tqW5Zl88sf+TIkbCysqrzTt7AwIDj46iCq8EJBl1dXe7q1auct7e34GM1NWHDhg24f/8+Z2tr22RekTSqXb7VcbeogEYd2ImiN6/kEn91u3wHDhxI5eXlSElJEetiTAh79uzBjBkzZNIwDQ0N6cGDB3VeN7t27cKsWbME3VNCQgKFh4fjxIkTkOc9zJgxA56enujWrVutdgZFRUVkYWGBkpISkTaxsbEYOHCg3PPVuXNnys7OFvl7WFgYXFxc5JaPp0+fko2Njdh69vHxwapVqz7Jg6Td0ikpKfXqXbixsTHdv3+/2t/atGmDkpISmeV13bp1tHXrVjx//lzm92FtbY2RI0fC1dUVurq6TW6vQaMXVAB48voVTfxlL249zpN53B8LalFREYk7riENp0+flrnrroULF1JsbCwePXoESX5OZYm6ujrMzc2xcOHCGt/TjRs36PTp07h+/bpMdib37dsX48aNg1BfsbLm1q1b5Obm9slyppqaGrZs2YJp06bVSv5+//13mjJlCqpzgblp0yZ8//33cs9HTk4OOTk5Vbtpz8bGBtevX682D48ePSInJ6dqj0WFhoZi0qRJ9aqzz8nJocmTJ3/SjjU0NBAWFgYHBweZ5zcqKooiIyNx7tw5QZsiq6KlpQUbGxsMGDAAY8aMaZIi2uQEtYIVkacp8Gp0gxHUVq1a4dixYxg0aBDbVcqDR48eUU5ODjIzM/HgwQNkZGTg3bt3lb8rKytDTU0NLVq0gKqqKr744gt07NgRxsbGMDMzq3dlHBERQQ8ePMC7d++gp6cHGxsbufsxro4LFy7QgwcP8PbtW+jp6aFXr14wMDCo1XwcOHCA8vPzK//W09Pj9V7uxo0b9Pvvv6O4uBgcx8HFxaXebc6rypUrVygrKwtv3rxBly5d4OTkVCt5ffLkCSUmJiI5ORlJSUn4888/P/i9efPmUFNTq7wMDQ3Rt2/fRutYhgkq3wb7IJtmHT+MRy//qNeC2q9fPxw/fhxt27ZlDZbBYDAaAApN7Ya/MujEZS7x4b7/ygGKCvXv9lVVVREUFIRr165xTEwZDAaDCWq9x3fI19ytectg077+fNNy6tSpyMvLq/N3eAwGg8FggioIE612XMwsLy5u7hK4mPWokxmrqqoqPD09UVhYiJ9//pmryRlTBoPBYNQdTe4dqiQOJt6kk2nJiMnJQBkP12XSvkPV19fHvHnzsHjxYiagDAaDwQS1cROVfZ/iHuYi/vED3CsuQvHbNzUS1O7du2Pw4MGwtbWFo6MjE1IGg8Fggtq0KX77hv56X4p/3pfCSFP7E2FMT08nJSUlKCsr4/PPP2c7dRkMBoMJKoPBYDAYDD4osCJgMBgMBoMJKoPBYDAYTFAZDAaDwWCCymAwGAwGgwkqg8FgMBhMUBkMBoPBYILKYDAYDAYTVAaDwWAwGExQGQwGg8FggspgMBgMBhNUBoPBYDAaKtnZ2bRv3z5igspgMBgMhhQ8e/aM5s+fT/b29sjMzBRry5zjMxgMBoMhgkWLFtGoUaPQv39/iV8NY4LKaJQ8f/6cWrduzbG8MRiM2oK3oGZlZdGuXbtw7949lJeX49WrV3j37h26du0KR0dHTJkyRWIH4evrS1evXhWdGY7DxYsXJcbz9OlT+uGHH5Cfn4+///4bLVu2RJ8+fbBs2TKxYaOiomjTpk0S79XOzg5Lly4VGdfixYvp7t27AABNTU1Mnz4dtra2vDrIzMxMOnToEJKSkpCUlIQWLVrA3Nwcffv2xaJFi3h3sv7+/hQdHY1OnTohJCSk2nCJiYm0fft25Ofno2XLlpg0aRJGjhxZ4448ICCALly4wGdkJ/JD6jdu3KDdu3ejsLAQHMfB1NQUL168gL6+PoYNG4aePXvWKJ/Ozs40f/58fPXVV7zjuXz5Mm3atAnv378HAJibmyMgIOCD8EeOHKHQ0FCUlpaiTZs2WL9+PfT19XmnkZKSQt9//z2ioqIE3d+WLVvo4sWLKCsrAwD06dMHPj4+H8Rx6dIl2r9/P54+fYpWrVph6tSpGDJkiMh0Fi5cSGlpaQCADh06YPfu3RwAxMbGkp+fHwBAW1sb/v7+cvmm7/3792nPnj1IT08HEeHNmzeVfYq9vT2mTp0qKM1Dhw7RpUuXkJaWhtzcXJiYmKBHjx4YNWoUBg0axCuupKQkCgkJQX5+Pnx9fWFtbV1tuE2bNlFMTAzKy8thaWmJTZs2iYx//fr1FBsbC1F97dChQ7Fw4cJa7T+q5umLL76Ajo4O3r17h169evHqyytIS0uj5cuX4927dxLLoYJJkyZRSUkJdHR0cODAAU5SXxMVFYXy8nJ89tlnGDNmDKZNm8bJs2969OgRBQQEICMjQ2R4CwsL+Pv7fxqeiCRe69evJzMzMwoPD6ePfzt37hwZGhqSn58f8Ylr5syZBIBycnKIiFBYWEh3796l0NBQ0tHRkRhHUVERmZiY0O3btytt8/LySFdXlwoKCsSG9/PzIxcXF9q6dSsdPXqUAgICCADt3LmTYmNj6ddff6URI0aQj4+PxHz079+fAFBeXh6v+yYihIWFUevWrWnfvn2Um5tLRISYmBjy8PAgAKSnp1f5fz7XsmXLCAAtW7ZMbJgWLVpQTEwM73glXcOHDycvLy/asWMHnTx5ktzd3UlFRYViY2MpNjaWQkNDycTEhGJjY8Wm+ezZM1JQUKDJkydX2nl6ehIA3u2puis/P58UFBRoypQpguOIiYkhANSvXz+RYcPDw3m11equuXPnEgDKysoSHL6ivbq6uooMm5ubSwDo+vXrvOIfOXIkAaBTp07Rx3X87bffyqzNfHz5+vqSmZkZHTly5IM0njx5Qj4+PqSpqUkrVqzgnf6AAQPo66+/pps3bxIRVYg1GRsbEwBauXKloHtRUVEhbW1tsc/3Dz/8QIMHD+YVr5eXFwGghw8fUkU9xcfH08yZM2nx4sVUF/1HRZ4q2mJCQgLp6+uToaEhFRUVCSovCwsLAiCxn9myZQsBIBcXF97xr1y5kgDQvn37qLb6JiKCsbExdezYsdLu4cOHlJCQQN7e3jRmzJhqw0u8mQULFpCVlZXYxC9fvkweHh68Cmjr1q0EgJ49e/aJfVJSksQ41q5dS87Ozp/Y7dmz5wORre46cODAB79HR0cTgMqHkIhQUFDAS3w8PDxIRUWFhHTUrVq1qnygPr6io6OpVatW1LdvX95x7t+/nwAQAPr5559FhjMxMaGSkhKZdY4fl+Pq1aupWbNmH/zv/PnzvNLT0dGh2bNnf2Brb29PioqKUud37dq1NGjQIGrWrJngjoGIMG7cOGrZsiWJE7Yff/xRqvzZ2tpSixYtyMvLS3D43377jQCQv7+/2LCff/65oLj19fXJyMioMkxGRgbZ2NjITUynTp1KAwYMEBt/UlISubu788rDsGHDxPY/48aNIwB09uxZ3vfUsWNHAkAWFhYiwxw5coR3v/fTTz/R/5u/VH+vddF/VOQpPz+fqvblAGj58uWC6n/UqFEEgOzt7UmS8Oro6ND06dN5x3/s2DECQHFxcVSbfdPYsWPJ0tJSUJ2JjfDChQufCI6oKzk5mVcmd+3aJVJQ+Y6q2rdvL5OHvTpBFTI7VFdX5x1OT0+PNm/eLNZ+8+bNBIC2bdvGK96jR4/S+PHjSUdHhxQVFUUOBHr27Cm3zlFUo+V7derU6RNB3bFjBwEgvm2qutnKo0ePCACtXr1a6lnq7t27qw1rbW0taGWi4tq+fTsdOnSIZs2aRUJFj4gQGxtLACgoKEhsWE1NTUFx//e//yUAFBgYSBUDmsTERLm0mbCwMFJSUqJ79+5JjD81NVWizcaNG0lPT0+ina6uLhkaGvK+J1NTU1q4cCEBoGHDhlUb7vTp07Rw4ULiOwgVJah11X9U5KmqoBIRtLS0qp20SBrUDB8+nADQjRs3SJQwLly4kLp3707jxo3jHX9ERAQBoDt37lBt9k2urq4iBVXUJfbYzObNm2FqairyPcJHa8q1ssli8uTJKCgogK2tbZ3upuI4DuXl5bxsg4KCKD8/X+J7koULF3IGBgbYs2cP7zzo6Ojgt99+Q/PmzeHi4oLs7OwGv8tMUVERysrKUrWpw4cP04gRI/Dll19yTk5OOHr0qOD0bW1tOSMjI+zcufOT3x48eEDNmzdH+/btpckb3NzcOHd3d/z99984dOhQvairiRMncv369YOvry+2bdtGbdu2Rffu3eXyPAcGBmLgwIEwMjKSGL+pqSnHJz5nZ2eJ6a5YsQK5ubkICwsjvs/W5s2bOVdXV0RERGDWrFl1Vlfy6j9EoaSkBCMjI0FhSktL4efnBxUVFWzYsKFam+3bt2Pu3LnQ0NDAmzdvBPW1AHj3t3WJWEG9efMmOnfuLJeEN2/eDF9fX/L19aU1a9aQu7s7rwZrYWHBrVmzBrGxsejSpQtdv369Tho6x3Hgu6HrypUr6NChAy/b4cOH4/79+4LyYmpqyp04cQKvX7/G8OHDG/xOuTNnzmD16tVShd22bRvc3d0BAO7u7sjKyoI0bWTevHlITk5GXFwcfbTxBW5uboLzdeLECerXr1/FhiLOzMwMR44cqTdlHhISglevXmHp0qXw9fWVWzqJiYno2rWrrOKi4uJimJiY8NmkBgBITU0VOgji7OzssGfPHmzbtq3Gfc358+fp8uXLdPnyZVq9ejXt3LmT6rr/qMrt27fpP//5D+bMmSMo3F9//QVTU1Nu2rRpOHPmDJKTkz+4r7i4OGrTpg0MDAy45s2b4+3bt4IFtS5OpBQXF1fqlK+vL3l4eFBQUBAJFtSMjAx68+YNNDQ05JJRVVVVGBkZwdLSEn///Te+/PJL3mFXrlzJbdiwAVlZWejfvz8WLFhQ6yWtoKCAf//9l5ftH3/8AVVVVV62Ojo6KCsrQ3x8vMR7qly3BzB48GBu7969yMrKwsCBAxvULDUtLQ1nz56l8+fP0+jRo6lnz55YuXKl4BlSdHQ0de3aFRVHUpydnTktLS0EBQUJztOcOXM4NTU17Nq164P/nzx5UtAuyAqCg4MxY8aMyr+nT5+OyMhIpKSkyLyuKjogIZibm3P29vYoLy9HaWmpXOr51q1bVFZWhpYtW8okvj/++AMA0Lx5c4m2bdq04Zo1a4aKXc18nq0KoqKiODMzMyxatKjiNZHU3LhxA1evXkVoaCjCwsJgZmZWZ/1H1ZWT2NhYCgwMpO+//x6//fYbtLS0BDUiJSUlAMCSJUugrKz8ySz14MGDmDt3bmV9CZmhKigo1OkMtVWrVrCyskKnTp3w5MkTdOvWTfgMtWvXrhwAZGdniwyclZVFTk5OpKamRhzH0alTp3hX4uzZs+Hs7MwNHz6c27hxI9erVy9BN7l06VLuwIEDaNasGbZt21axW7FeCmr79u3x+PFjXrYtWrQAALRu3VpwniZPnsx5e3vjypUrmDJlSoMR1X///ReJiYnYuHEjTp8+DRsbG6ni2bVrF6ZNm/bB/1xdXXHy5EkUFxcLLo8pU6YgLCzsg1G2tbW14Hylp6eToqIiunTpUtlJTZw4ESoqKti3b59cVk+EkpSURLm5uVBWVoaHh4fcnpn/6zdkEl/FrI3vs6Wuro5WrVpJlVZERAS0tLTg7OyM1NRUqZ+tdevWcatXr+b27t3Lbd++HW3atKnz/uOPP/7A6dOnsXbtWvznP/+p7PuFoKioCADQ19fnpk6divDwcNy7d48AoKSkhFJTUyuPsLVo0aLBCGrbtm0xZ84cbujQodz48eO5VatWiV0tELvkq6enJ3aJpHPnztz58+e5/v37w8zMDKNHj5b6vcvw4cM5KTo8Li8vDyNGjKhYJqw1EVFQUOBdwV27dsWrV68+WT6sjgcPHkBdXR2GhoZSleWaNWs4V1dXHDp0CH5+fg1CVC0sLLBmzRru6tWrnIuLC2bNmiU4jtzcXLp16xb8/Pxgb29PFVdKSgrKy8tx8OBBwXF+++23KC0txYYNGwgAwsLCpFru3bp1K/75558P8jVhwgTo6+sLeserqakJAJVnUcUtvwnFw8MDAQEBWLt2LS5cuIDjx4/LvO306tWLU1RUrNGSZFU6duzINWvWDLGxsbzsi4qKYGpqKlVaOjo6XEREREVfhadPn9a4fOzs7LjOnTtzdd1/LFiwAEFBQVx0dDSuXbtWcbRF8KC4gmXLlkFJSQn+/v4AgL1792L27NmVvzdr1gyvX78WPECsD+9Qzc3NObFlK27H0po1awgAHT58mCSd/ZF0tObjXb7SHuPYuXNnteF69OhBtra2VFu7fH18fHjv2nv48CF9/vnn9PXXX0u079KlC+8t60ePHhW5y9DOzo4A0IkTJ6gh7fJ98uQJqamp8T4yUXX39/79+6sNM3ToUOratatU+XNwcKg8i9a7d2/BcTx9+pSMjY2rDfd/73bp4MGDvONVVFQUe6by2bNn1L17d0H53L9/Pzk4OFDVXcz6+vpyaTMVZyb5HE0rKiqiwsJCsXbz5s0jABQfHy/xyJy6ujo9efKE+O7yFdVnKCkpkZWVFR09epQWLVok912+8uo/qtvl6+XlRZ9//jmvXdhVr4+fjenTp5OCggLdvXuXPi7LpUuXkrKyMgnd3X758uVa3+Ur7tiU4F2+3t7eXNeuXbFo0SIUFBSIHLWUlZXxHnFUeKGR9gVzdHQ0Hj9+/ElgJycnqKioCIqrYqTPd+m2KkLeM+nr63Pe3t44c+YMxG1COHz4MAGAn58fxzf/osoxKiqKMzc3h6urKwoKCuQ6aisrK5M4axIXtmr5a2trc8uXL8eBAwfw66+/8m4kYWFhcHd350Qt3WZkZODs2bOCG93s2bORk5ODOXPm0OjRowXf386dOzF27Nhqf7OxseFMTEywfft23vFNnDgRp0+fFvn7uXPn0LdvX97xFRcXk4+Pzwc7mnfu3InCwkKsWLFC5rPUoKAgzsDAAO7u7igpKREbv6Ojo8S2GxwczOno6GDmzJl4/vy5yPg2bdoEf39/aGtrc0L6ho8ZPHgwt2vXLiQkJGD58uW8+zFp+hh59x8Veaqat8DAQE5DQwNTpkyp0WuGZcuWAQBGjRr1Sfv/7LPPBPWfFZohTR9Tk77p/fv3wnVKkuLevXuXLC0tydDQsNpRZXFxMWlraxPfs2/e3t4iPQx5eHhI9GCxZcuWD0bTFdfXX38t8tyguBkeADpz5ozgEcz/baOnp0+f8g47Y8YMkZ6NwsLCqFevXoLOXgYHB5ObmxuJ8xikp6fHe2Ts6elJjo6OgsuiwvuPNKNAdXX1ar2OGBkZkY6ODi/PL35+fhJXJ9TU1CQ6ExB3BlBBQUHibKm6q23btmJnY+vWrSMAFBkZySvux48fU7NmzT45u1vhHcja2lpQHp2cnKp1UjF16lTez0ZycjKZmJjwfo4uXbpErVq1Ik1NTTp69OgnYfLy8sjGxobWr1/PK76rV6+Sjo4OderUiX7//Xf6eMY+atQoWrp0qaByadOmDWVmZooMs2rVKgLA+xxqxRlRcXHWdv9RkaePzxxXzFyXLFnCK66bN29Wuwo2bdo0UlFRoeLi4g9++7+BGvFxaEFEFQMFCgsLq9W+ydbWljp16kTVrZwMGTJEOk9JVV2FdevWjQYOHEg+Pj60cuVKGjNmDGlqapKTkxPdunWL+Ey/W7duTQDIxsaG7OzsyM7OjmxsbEhFRUWsd5qqHiqsrKzIwsKC1qxZQ9999x05ODhQSEiIoEILDg6mfv36VbqZE7WUXN21ePFiUlVVJQDk7OxMx48fF+R+sMJbyJgxY8jLy4vs7e15e1ypKiIWFhakpqZGPj4+Ih1lJCUlkZqaGq+4tbW1BXl/qlj61tHRIQA0adIkioiI4BX+ypUrNH/+fAJAKioq5OPj84FXo4plHlVVVbGd1rJly0hJSYkMDQ3Jx8fnk1cJeXl55OPjQy1atKh02yfU7d+6deto+PDhgsJcvHixsn1NnTq1WredBw4coK+//poAkK6uLu3Zs4dXGsnJyTRgwABq27YtTZs2jXx8fGjOnDn0zTff8HY9FxkZSTY2NgSABg8e/EHZ5+fnU4XnGyUlpWrF++PXMODhArPq9ejRI1q2bBn16NGD9PT0aMyYMbRw4ULq168fOTg48G5HVYXT1dWVtLS0qFevXuTl5UXjx48nOzs7QW434+LiKl35jRw5Uuyz7ebmxktQ/fz8yMzMrDJOSa/Qaqv/MDc3r3Rc8csvv9DHrzoAUO/evcUupx84cKDy3iZNmvRB+8vIyKCZM2fSx17GKtwUdu/enUJDQ8XmOygoiAwMDAgA9ezZkwICAkjefVNOTg5VCLGKikqlTtnZ2VXmXVR/IFWlJicnU2xsLD148ICEvgsQ9S4pNjaWMjIyBMUXHx8vOA8VV3Z29icdL9+wH3tw4fte5uPr9u3bn4ze+F4VvpCJCGlpaRLduPEtk/T0dEH5+bgshLwbr1oHQnyQVr2qzkhEefdJSEioHHAIWVGoegn10lJVoLKysqqd3T569OiDGcvjx49JmmcxISFBcLiqA7DqZjVVy1KSj+yKAVBN3q0mJyfXaPZW9Xrw4AGlpKRIHVfVNiLp3vk8W1UHcJmZmfTo0SOZ3GdN+o/79+9/EI5PHUvq0/mUxf3796lq3yUp3Y/7aSH9RE36pupclj58+JAuX75MsbGxIlcm2efbGAwGg8GQAQqsCBgMBoPBYILKYDAYDAYTVAaDwWAwmKAyGAwGg8Go5P8DMLrGHGYRUmgAAAAASUVORK5CYII=";
+const ENTREPRISE = { nom: "GESTRAC", baseline: "Gestion · Travaux · Conformité", controleur: "NR" };
+
+/* ---------- Outils ---------- */
+const num = v => { if (v == null || v === '') return null; const n = parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(n) ? n : null; };
+const fmt = (n, d = 2) => (n == null || !Number.isFinite(n)) ? '—' : n.toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+const dateFr = s => { if (!s) return ''; const [y, m, d] = s.split('-'); return d && m && y ? `${d}/${m}/${y}` : s; };
+
+/* ---------- Calculs déterministes ---------- */
+const TYPES_OUV = { F: 'Fenêtre', PF: 'Porte-fenêtre', P: 'Porte', A: 'Autre' };
+function iteMetres(facades) {
+  const rows = facades.map(f => {
+    const L = num(f.largeur), Hg = num(f.hauteur), Hf = num(f.faitage), pignon = f.forme === 'pignon';
+    // Pignon : hauteur moyenne = hauteur à l'égout + (hauteur au faîtage − hauteur à l'égout) / 2
+    const H = pignon ? ((Hg != null && Hf != null) ? Hg + (Hf - Hg) / 2 : null) : Hg;
+    const brut = (L != null && H != null) ? L * H : null;
+    let ded = 0, tab = 0, app = 0, bag = 0, incomplete = false;
+    const ouv = f.ouvertures.map(o => {
+      const q = num(o.qte) ?? 1, l = num(o.l), h = num(o.h);
+      if (l == null || h == null) { incomplete = true; return { ...o, q, l, h, s: null }; }
+      const s = q * l * h;
+      ded += s;
+      if (o.type !== 'A') {
+        tab += q * (2 * h + l);          // tableaux + voussure
+        bag += q * 2 * (l + h);          // baguettes d'angle = périmètre
+        if (o.type === 'F') app += q * l; // appuis : fenêtres uniquement
+      }
+      return { ...o, q, l, h, s };
+    });
+    const net = brut != null ? brut - ded : null;
+    return { f, L, H, Hg, Hf, pignon, brut, ded, net, tab, app, bag, ouv, incomplete };
+  });
+  const inc = rows.filter(r => r.f.statut === 'inclus');
+  const sum = k => inc.reduce((a, r) => a + (r[k] ?? 0), 0);
+  return { rows, tot: { brut: sum('brut'), ded: sum('ded'), net: sum('net'), tab: sum('tab'), app: sum('app'), bag: sum('bag'), n: inc.length },
+           options: rows.filter(r => r.f.statut === 'option'), exclues: rows.filter(r => r.f.statut === 'exclu') };
+}
+
+/* Température extérieure de base au niveau de la mer (°C) par département.
+   v:1 = valeur recoupée sur une source publique (tableau NF P52-612/CN repris par TouteLaClim) ; v:0 = à confirmer. */
+const DEP = {
+ '01':['Ain',-10,1],'02':['Aisne',-7,1],'03':['Allier',-8,1],'04':['Alpes-de-Haute-Provence',-8,1],'05':['Hautes-Alpes',-10,0],'06':['Alpes-Maritimes',-6,1],
+ '07':['Ardèche',-6,1],'08':['Ardennes',-10,1],'09':['Ariège',-5,1],'10':['Aube',-10,1],'11':['Aude',-5,1],'12':['Aveyron',-8,1],'13':['Bouches-du-Rhône',-5,1],
+ '14':['Calvados',-7,1],'15':['Cantal',-8,1],'16':['Charente',-5,1],'17':['Charente-Maritime',-5,1],'18':['Cher',-7,1],'19':['Corrèze',-8,1],'20':['Corse',-2,1],
+ '21':["Côte-d'Or",-10,1],'22':["Côtes-d'Armor",-4,1],'23':['Creuse',-8,1],'24':['Dordogne',-5,1],'25':['Doubs',-12,1],'26':['Drôme',-6,1],'27':['Eure',-7,0],
+ '28':['Eure-et-Loir',-7,0],'29':['Finistère',-4,0],'30':['Gard',-5,0],'31':['Haute-Garonne',-5,0],'32':['Gers',-5,0],'33':['Gironde',-5,1],'34':['Hérault',-5,1],
+ '35':['Ille-et-Vilaine',-4,1],'36':['Indre',-7,1],'37':['Indre-et-Loire',-7,1],'38':['Isère',-10,1],'39':['Jura',-10,1],'40':['Landes',-5,1],'41':['Loir-et-Cher',-7,1],
+ '42':['Loire',-8,1],'43':['Haute-Loire',-8,0],'44':['Loire-Atlantique',-5,1],'45':['Loiret',-7,1],'46':['Lot',-6,1],'47':['Lot-et-Garonne',-5,1],'48':['Lozère',-8,1],
+ '49':['Maine-et-Loire',-7,1],'50':['Manche',-4,1],'51':['Marne',-10,1],'52':['Haute-Marne',-12,1],'53':['Mayenne',-7,1],'54':['Meurthe-et-Moselle',-15,1],
+ '55':['Meuse',-12,1],'56':['Morbihan',-4,1],'57':['Moselle',-15,1],'58':['Nièvre',-10,1],'59':['Nord',-9,1],'60':['Oise',-7,0],'61':['Orne',-7,0],
+ '62':['Pas-de-Calais',-9,0],'63':['Puy-de-Dôme',-8,0],'64':['Pyrénées-Atlantiques',-5,1],'65':['Hautes-Pyrénées',-5,0],'66':['Pyrénées-Orientales',-5,1],
+ '67':['Bas-Rhin',-15,1],'68':['Haut-Rhin',-15,1],'69':['Rhône',-10,1],'70':['Haute-Saône',-10,0],'71':['Saône-et-Loire',-10,1],'72':['Sarthe',-7,1],
+ '73':['Savoie',-10,1],'74':['Haute-Savoie',-10,1],'75':['Paris',-5,1],'76':['Seine-Maritime',-7,1],'77':['Seine-et-Marne',-7,1],'78':['Yvelines',-7,1],
+ '79':['Deux-Sèvres',-7,1],'80':['Somme',-9,1],'81':['Tarn',-5,1],'82':['Tarn-et-Garonne',-5,1],'83':['Var',-5,1],'84':['Vaucluse',-6,1],'85':['Vendée',-5,1],
+ '86':['Vienne',-7,1],'87':['Haute-Vienne',-8,1],'88':['Vosges',-15,1],'89':['Yonne',-10,0],'90':['Territoire de Belfort',-15,0],'91':['Essonne',-7,0],
+ '92':['Hauts-de-Seine',-7,0],'93':['Seine-Saint-Denis',-7,1],'94':['Val-de-Marne',-7,0],'95':["Val-d'Oise",-7,0] };
+/* Correction d'altitude : ligne 0-200 m → ligne 201-400 m (zones A à I). Au-delà de 400 m : non automatisé. */
+const ALT_0 = [-2, -4, -5, -7, -8, -9, -10, -12, -15], ALT_201 = [-4, -5, -6, -8, -9, -10, -11, -13, -15];
+/* Coefficient G indicatif (W/m³·K) selon la période de construction. */
+const PERIODES = [['Avant 1975', 1.5], ['1975 – 1982', 1.3], ['1983 – 1989', 1.15], ['1990 – 1999', 1.05], ['2000 – 2005', 0.95], ['2006 – 2012 (RT 2005)', 0.8], ['Après 2012 (RT 2012 / RE 2020)', 0.5], ['Maison jamais isolée', 1.8]];
+const T_INT = 19, MARGE = 1.2;
+function pacDim(v) {
+  const w = [], cp = (String(v.adresse || '').match(/\b(\d{5})\b/) || [])[1];
+  const code = cp ? (cp.startsWith('20') ? '20' : cp.slice(0, 2)) : null, d = code ? DEP[code] : null;
+  if (!cp) w.push("Code postal introuvable dans l'adresse");
+  else if (!d) w.push(`Département ${code} non couvert par le tableau`);
+  else if (!d[2]) w.push(`Température de base du département ${code} à confirmer`);
+  const alt = num(v.altitude);
+  let tb = null;
+  if (d) {
+    if (alt == null) { tb = d[1]; w.push("Altitude inconnue : valeur 0-200 m retenue"); }
+    else if (alt <= 200) tb = d[1];
+    else if (alt <= 400) { const i = ALT_0.indexOf(d[1]); if (i >= 0) tb = ALT_201[i]; else w.push(`Correction d'altitude non disponible pour ${d[1]} °C`); }
+    else w.push("Site au-dessus de 400 m : température de base à déterminer manuellement");
+  }
+  const per = PERIODES.find(p => p[0] === v.periode), G = per ? per[1] : null;
+  if (!per) w.push('Période de construction non renseignée');
+  const s = num(v.surface), h = num(v.hsp), V = (s != null && h != null) ? s * h : null;
+  const dt = tb != null ? T_INT - tb : null;
+  const P = (V != null && dt != null && G != null) ? G * V * dt / 1000 : null;
+  return { code, nom: d ? d[0] : null, tb0: d ? d[1] : null, tb, G, V, dt, P, Ppac: P != null ? P * MARGE : null, warn: w };
+}
+
+function surfMetres(surfaces) {
+  const rows = surfaces.map(x => {
+    const L = num(x.longueur), l = num(x.largeur), d = num(x.directe);
+    const s = (L != null && l != null) ? L * l : d;
+    return { x, L, l, s, directe: !(L != null && l != null) && d != null };
+  });
+  return { rows, total: rows.reduce((a, r) => a + (r.s ?? 0), 0) };
+}
+/* Date de prise de vue lue dans les données EXIF du fichier JPEG (si présentes) */
+async function exifDate(file) {
+  try {
+    const b = new DataView(await file.slice(0, 131072).arrayBuffer());
+    if (b.getUint16(0) !== 0xFFD8) return null;
+    let o = 2;
+    while (o < b.byteLength - 4) {
+      const m = b.getUint16(o), len = b.getUint16(o + 2);
+      if (m === 0xFFE1 && b.getUint32(o + 4) === 0x45786966) {
+        const t = o + 10, le = b.getUint16(t) === 0x4949, u16 = i => b.getUint16(i, le), u32 = i => b.getUint32(i, le);
+        const str = (off, n) => { let r = ''; for (let i = 0; i < n - 1; i++) r += String.fromCharCode(b.getUint8(t + off + i)); return r; };
+        const ifd = (off, want) => { const n = u16(t + off); for (let i = 0; i < n; i++) { const e = t + off + 2 + i * 12; if (u16(e) === want) return u32(e + 8); } return null; };
+        const exif = ifd(u32(t + 4), 0x8769);
+        const at = (exif != null ? ifd(exif, 0x9003) : null) ?? ifd(u32(t + 4), 0x0132);
+        if (at == null) return null;
+        const v = str(at, 20).match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})/);
+        return v ? `${v[3]}/${v[2]}/${v[1]} à ${v[4]}:${v[5]}` : null;
+      }
+      o += 2 + len;
+    }
+  } catch (e) {}
+  return null;
+}
+
+/* ---------- Trames (définitions : ajouter une visite = ajouter un bloc ici) ---------- */
+const C_GEN = [
+  { id: 'client', label: 'Nom / Prénom du client', type: 'text', req: true },
+  { id: 'adresse', label: 'Adresse du chantier', type: 'text', req: true },
+  { id: 'date', label: 'Date de visite', type: 'date', req: true },
+  { id: 'donneur', label: "Entreprise donneuse d'ordre", type: 'text', admin: true },
+];
+const TRAMES = [
+  { id: 'ite-avant', court: 'ITE · avant travaux', titre: 'Rapport de visite technique', sous: "Visite avant travaux — Isolation Thermique par l'Extérieur", ite: true,
+    sections: [
+      { id: 'gen', titre: 'Informations générales', champs: [...C_GEN,
+        { id: 'mur', label: 'Type de mur', type: 'choice', options: ['Parpaing', 'Brique', 'Pierre', 'Béton', 'Autre'], req: true },
+        { id: 'niveaux', label: 'Nombre de niveaux', type: 'choice', options: ['RDC', 'R+1', 'R+2', 'R+3 ou +'], req: true } ] },
+      { id: 'fac', titre: 'Métrés ITE par façade', facades: true, photosMin: 2, statutAide: true },
+      { id: 'marge', titre: "Marge d'erreur", admin: true, horsRapport: true, champs: [
+        { id: 'marge', label: "Marge d'erreur appliquée à la surface nette", type: 'number', unit: '%', admin: true },
+        { id: 'net_marge', label: 'Surface nette avec marge', type: 'calc', unit: 'm²', calc: (v, c) => num(v.marge) ? c.ite.tot.net * (1 + num(v.marge) / 100) : null } ] },
+      { id: 'obs', titre: 'Observations & commentaires', champs: [
+        { id: 'observations', label: 'Observations, zones non isolées, points de vigilance', type: 'textarea' } ] },
+      { id: 'cro', titre: 'Croquis & plans de métrés', champs: [
+        { id: 'croquis', label: 'Photo des croquis à main levée', type: 'photos', min: 1 } ] },
+    ] },
+  { id: 'ite-ctrl', court: 'ITE · contrôle', titre: 'Rapport de visite technique', sous: "Contrôle en cours / après travaux — Isolation Thermique par l'Extérieur", ite: true,
+    sections: [
+      { id: 'gen', titre: 'Informations générales', champs: [...C_GEN,
+        { id: 'avancement', label: 'Avancement du chantier', type: 'choice', options: ['En cours', 'Terminé'], req: true },
+        { id: 'isolant', label: 'Isolant posé', type: 'choice', options: ['Polystyrène', 'Laine de roche', 'Laine de bois', 'Inconnu'], req: true } ] },
+      { id: 'fac', titre: 'Contrôle des façades isolées', facades: true, photosMin: 2, statutAide: true },
+      { id: 'ctrl', titre: 'Vérification des surfaces', admin: true, highlight: 'ecart', champs: [
+        { id: 'surface_declaree', label: "Surface nette annoncée par l'entreprise de pose", type: 'number', unit: 'm²', admin: true },
+        { id: 'marge', label: "Marge d'erreur tolérée sur la mesure", type: 'number', unit: '%', admin: true },
+        { id: 'net_marge', label: 'Surface mesurée avec marge', type: 'calc', unit: 'm²', calc: (v, c) => num(v.marge) ? c.ite.tot.net * (1 + num(v.marge) / 100) : null },
+        { id: 'taux', label: 'Taux surface nette / brute', type: 'calc', unit: '%', dec: 1, calc: (v, c) => c.ite.tot.brut ? c.ite.tot.net / c.ite.tot.brut * 100 : null },
+        { id: 'ecart', label: 'Écart annoncé − mesuré', type: 'calc', unit: 'm²', calc: (v, c) => (num(v.surface_declaree) != null && c.ite.tot.n) ? num(v.surface_declaree) - c.ite.tot.net : null },
+        { id: 'ecart_pct', label: 'Écart en %', type: 'calc', unit: '%', dec: 1, calc: (v, c) => (num(v.surface_declaree) != null && c.ite.tot.net) ? (num(v.surface_declaree) - c.ite.tot.net) / c.ite.tot.net * 100 : null } ] },
+      { id: 'obs', titre: 'Remarques', champs: [ { id: 'observations', label: 'Remarques sur la pose, anomalies', type: 'textarea' } ] },
+      { id: 'cro', titre: 'Schémas à main levée', champs: [ { id: 'croquis', label: 'Photo des schémas cotés', type: 'photos', min: 1 } ] },
+    ] },
+  { id: 'pac-avant', court: 'PAC air/eau · avant travaux', titre: 'Rapport de visite technique', sous: 'Rénovation énergétique — Pré-travaux PAC Air/Eau',
+    sections: [
+      { id: 'gen', titre: 'Informations générales client', champs: [
+        { id: 'client', label: 'Nom / Prénom', type: 'text', req: true },
+        { id: 'tel', label: 'Téléphone', type: 'text' },
+        { id: 'adresse', label: 'Adresse complète', type: 'text', req: true },
+        { id: 'date', label: 'Date de visite', type: 'date', req: true },
+        { id: 'donneur', label: "Entreprise donneuse d'ordre", type: 'text', admin: true } ] },
+      { id: 'log', titre: 'Logement', champs: [
+        { id: 'surface', label: 'Surface chauffée', type: 'number', unit: 'm²', req: true },
+        { id: 'hsp', label: 'Hauteur sous plafond', type: 'number', unit: 'm', req: true },
+        { id: 'occupants', label: "Nombre d'occupants", type: 'number' },
+        { id: 'type_log', label: 'Type de logement', type: 'choice', options: ['Maison', 'Appartement'], req: true },
+        { id: 'periode', label: 'Période de construction (demander au client)', type: 'choice', options: PERIODES.map(p => p[0]), req: true },
+        { id: 'ph_plan', label: 'Plan de masse', type: 'photos', min: 1 } ] },
+      { id: 'chauf', titre: 'Installation de chauffage actuelle', champs: [
+        { id: 'chauffage', label: 'Type de chauffage', type: 'choice', options: ['Gaz', 'Fioul', 'Électrique', 'Bois'], req: true },
+        { id: 'chaudiere', label: 'Présence chaudière', type: 'choice', options: ['Oui', 'Non'], req: true },
+        { id: 'chaud_modele', label: 'Marque / modèle chaudière', type: 'text' },
+        { id: 'empl_chaud', label: 'Emplacement chaudière', type: 'text' },
+        { id: 'emetteurs', label: "Type d'émetteurs", type: 'choice', options: ['Radiateurs', 'Plancher chauffant', 'Ventilo-convecteurs'], req: true },
+        { id: 'nb_rad', label: 'Nombre de radiateurs', type: 'number' },
+        { id: 'ph_chaud', label: 'Chaudière actuelle — mesures et emplacement', type: 'photos', min: 2 },
+        { id: 'ph_rad', label: 'Émetteurs existants', type: 'photos', min: 1 } ] },
+      { id: 'pac', titre: 'Future installation PAC air/eau', champs: [
+        { id: 'type_pac', label: 'Type de PAC prévue', type: 'choice', options: ['Air/Eau', 'Air/Air'], req: true },
+        { id: 'empl_ui', label: 'Emplacement unité intérieure', type: 'text', req: true },
+        { id: 'dist_ui_ue', label: 'Distance UI / UE', type: 'number', unit: 'ml', req: true },
+        { id: 'largeur_acces', label: 'Largeur accès / portes', type: 'number', unit: 'cm', req: true },
+        { id: 'difficultes', label: 'Difficultés de passage', type: 'choice', options: ['Oui', 'Non'], req: true },
+        { id: 'ph_fac', label: 'Façades — emplacement groupe extérieur', type: 'photos', min: 2 } ] },
+      { id: 'elec', titre: 'Installation électrique', champs: [
+        { id: 'compteur', label: 'Type de compteur', type: 'choice', options: ['Monophasé', 'Triphasé'], req: true },
+        { id: 'kva', label: 'Puissance compteur', type: 'number', unit: 'kVA', req: true },
+        { id: 'dist_tab', label: 'Distance tableau / PAC', type: 'number', unit: 'ml' },
+        { id: 'tab_conforme', label: 'Tableau électrique conforme', type: 'choice', options: ['Oui', 'Non'], req: true },
+        { id: 'ph_tab', label: 'Tableau électrique', type: 'photos', min: 1 } ] },
+      { id: 'ecs', titre: 'Eau chaude sanitaire', champs: [
+        { id: 'ecs', label: 'Système ECS actuel', type: 'choice', options: ['Ballon électrique', 'Chaudière', 'Instantané', 'Autre'], req: true },
+        { id: 'p_l', label: 'Pièce — longueur', type: 'number', unit: 'm' },
+        { id: 'p_w', label: 'Pièce — largeur', type: 'number', unit: 'm' },
+        { id: 'p_h', label: 'Pièce — hauteur', type: 'number', unit: 'm' },
+        { id: 'p_s', label: 'Surface pièce', type: 'calc', unit: 'm²', calc: v => (num(v.p_l) != null && num(v.p_w) != null) ? num(v.p_l) * num(v.p_w) : null },
+        { id: 'ventil', label: 'Ventilation présente', type: 'choice', options: ['Oui', 'Non'] },
+        { id: 'ecs_existant', label: 'Ballon existant (capacité, puissance)', type: 'text' },
+        { id: 'ecs_futur', label: 'Production ECS envisagée', type: 'text' },
+        { id: 'ph_ecs', label: 'Pièce ECS et ballon existant', type: 'photos', min: 1 } ] },
+      { id: 'dim', titre: 'Note de dimensionnement PAC (informative)', highlight: 'pac', champs: [
+        { id: 'altitude', label: 'Altitude du site', type: 'number', unit: 'm', auto: true },
+        { id: 'dep', label: 'Département', type: 'calc', calc: (v, c) => c.pac.code ? `${c.pac.code} – ${c.pac.nom ?? 'inconnu'}` : null },
+        { id: 'tb0', label: 'Température de base (niveau de la mer)', type: 'calc', unit: '°C', dec: 0, calc: (v, c) => c.pac.tb0 },
+        { id: 'tb', label: 'Température extérieure de base retenue', type: 'calc', unit: '°C', dec: 0, calc: (v, c) => c.pac.tb },
+        { id: 'tint', label: 'Température intérieure de référence', type: 'calc', unit: '°C', dec: 0, calc: () => T_INT },
+        { id: 'dt', label: 'ΔT (écart thermique)', type: 'calc', unit: '°C', dec: 0, calc: (v, c) => c.pac.dt },
+        { id: 'volume', label: 'Volume chauffé', type: 'calc', unit: 'm³', dec: 1, calc: (v, c) => c.pac.V },
+        { id: 'g', label: 'Coefficient G (selon période)', type: 'calc', unit: 'W/m³·K', calc: (v, c) => c.pac.G },
+        { id: 'deperd', label: 'Puissance de déperdition estimée', type: 'calc', unit: 'kW', dec: 1, calc: (v, c) => c.pac.P },
+        { id: 'puissance', label: 'Puissance PAC indicative (× 1,2)', type: 'calc', unit: 'kW', dec: 1, calc: (v, c) => c.pac.Ppac } ] },
+      { id: 'obs', titre: 'Observations générales', champs: [ { id: 'observations', label: "Points d'attention", type: 'textarea' } ] },
+    ] },
+  { id: 'autre', court: 'Autre visite', titre: 'Rapport de visite technique', sous: 'Visite technique', horodatage: true,
+    sections: [
+      { id: 'gen', titre: 'Informations générales', champs: [
+        { id: 'type_client', label: 'Type de client', type: 'choice', options: ['Particulier', 'Professionnel'], req: true },
+        { id: 'client', label: 'Nom / Raison sociale', type: 'text', req: true },
+        { id: 'contact', label: 'Nom du contact sur place', type: 'text' },
+        { id: 'tel', label: 'Téléphone', type: 'text' },
+        { id: 'email', label: 'E-mail', type: 'text' },
+        { id: 'adresse', label: 'Adresse du site', type: 'text', req: true },
+        { id: 'date', label: 'Date de visite', type: 'date', req: true },
+        { id: 'donneur', label: "Entreprise donneuse d'ordre", type: 'text', admin: true } ] },
+      { id: 'objet', titre: 'Objet de la visite', champs: [
+        { id: 'objet_type', label: 'Type de visite', type: 'text', req: true, ph: 'Ex. : métré de hangar pour éclairage LED, photos horodatées…' },
+        { id: 'objet_desc', label: 'Description de la demande', type: 'textarea' } ] },
+      { id: 'surf', titre: 'Surfaces mesurées', surfaces: true },
+      { id: 'obs', titre: 'Observations', champs: [ { id: 'observations', label: 'Constats, remarques', type: 'textarea' } ] },
+      { id: 'docs', titre: 'Autres photos et documents', champs: [ { id: 'ph_docs', label: 'Photos complémentaires ou photos de documents', type: 'photos' } ] },
+    ] },
+  { id: 'pac-apres', court: 'PAC + ECS · après travaux', titre: 'Rapport de visite technique', sous: 'Contrôle après travaux — PAC Air/Eau et eau chaude sanitaire',
+    sections: [
+      { id: 'gen', titre: 'Informations générales', champs: [...C_GEN] },
+      { id: 'pac', titre: 'PAC installée', champs: [
+        { id: 'pac_marque', label: 'Marque', type: 'text', req: true },
+        { id: 'pac_modele', label: 'Modèle', type: 'text', req: true },
+        { id: 'pac_puissance', label: 'Puissance nominale', type: 'number', unit: 'kW', req: true },
+        { id: 'pac_serie', label: 'N° de série', type: 'text' },
+        { id: 'ph_ue', label: 'Unité extérieure (vue large)', type: 'photos', min: 2 },
+        { id: 'ph_ui', label: 'Unité intérieure', type: 'photos', min: 1 },
+        { id: 'ph_plaque', label: 'Plaque signalétique', type: 'photos', min: 1 } ] },
+      { id: 'ecs', titre: 'Eau chaude sanitaire', champs: [
+        { id: 'ecs_type', label: 'Production ECS installée', type: 'choice', options: ['Ballon intégré à la PAC', 'Ballon thermodynamique', 'Ballon électrique', 'Autre'], req: true },
+        { id: 'ecs_marque', label: 'Marque / modèle du ballon', type: 'text' },
+        { id: 'ecs_volume', label: 'Capacité', type: 'number', unit: 'L' },
+        { id: 'ph_ecs', label: 'Ballon ECS et plaque signalétique', type: 'photos', min: 1 } ] },
+      { id: 'mes', titre: 'Mise en service', champs: [
+        { id: 'mes_date', label: 'Date de mise en service', type: 'date', req: true },
+        { id: 'mes_ok', label: 'Installation en fonctionnement', type: 'choice', options: ['Oui', 'Non'], req: true },
+        { id: 'mes_pv', label: 'PV de mise en service remis au client', type: 'choice', options: ['Oui', 'Non'], req: true } ] },
+      { id: 'obs', titre: 'Observations', champs: [ { id: 'observations', label: 'Anomalies, réserves', type: 'textarea' } ] },
+    ] },
+];
+
+const fr = x => x == null ? '' : String(x).replace('.', ',');
+const ouv = (type, qte, l, h) => ({ id: uid(), type, qte: String(qte), l: fr(l), h: fr(h) });
+const fac = (nom, statut, L, H, o = [], commentaire = '') => ({ id: uid(), nom, statut, largeur: fr(L), hauteur: fr(H), ouvertures: o, commentaire });
+const surf = (nom, L, l, directe = '', observation = '') => ({ id: uid(), nom, longueur: fr(L), largeur: fr(l), directe: fr(directe || null), observation });
+/* ---------- Vérification ---------- */
+function validate() {
+  const t = T(), st = S(), v = st.values, out = [];
+  let total = 0, done = 0;
+  for (const sec of t.sections) {
+    if (sec.facades) {
+      const actives = st.facades.filter(f => f.statut !== 'exclu');
+      total++; if (actives.length) done++; else out.push([sec.titre, 'Aucune façade renseignée']);
+      for (const f of st.facades.filter(f => f.statut === 'exclu')) { total++; if (String(f.commentaire || '').trim()) done++; else out.push([sec.titre, `${f.nom || 'Façade exclue'} : indique pourquoi elle est exclue`]); }
+      for (const f of actives) {
+        total++;
+        const ok = num(f.largeur) != null && num(f.hauteur) != null && (f.forme !== 'pignon' || num(f.faitage) != null);
+        if (ok) done++; else out.push([sec.titre, `${f.nom || 'Façade sans nom'} : ${f.forme === 'pignon' ? 'largeur, hauteur à l\'égout ou au faîtage manquante' : 'largeur ou hauteur manquante'}`]);
+        if (f.forme === 'pignon' && num(f.faitage) != null && num(f.hauteur) != null && num(f.faitage) <= num(f.hauteur)) out.push([sec.titre, `${f.nom} : la hauteur au faîtage doit être plus grande que la hauteur à l'égout`]);
+        if (f.ouvertures.some(o => num(o.l) == null || num(o.h) == null)) out.push([sec.titre, `${f.nom} : une ouverture n'a pas ses dimensions`]);
+        const r = iteMetres([f]).rows[0];
+        if (r.net != null && r.net < 0) out.push([sec.titre, `${f.nom} : les ouvertures dépassent la surface brute`]);
+        total++; const n = P('fac-' + f.id).length;
+        if (n >= sec.photosMin) done++; else out.push([sec.titre, `${f.nom} : ${n}/${sec.photosMin} photos`]);
+      }
+      continue;
+    }
+    if (sec.surfaces) {
+      for (const x of st.surfaces || []) {
+        const nm = x.nom || 'Surface sans nom';
+        total++; if (String(x.nom || '').trim()) done++; else out.push([sec.titre, 'Une surface n\'a pas de description']);
+        total++; if (surfMetres([x]).rows[0].s != null) done++; else out.push([sec.titre, `${nm} : dimensions manquantes`]);
+        total++; if (P('surf-' + x.id).length) done++; else out.push([sec.titre, `${nm} : 0/1 photo`]);
+      }
+      continue;
+    }
+    for (const ch of sec.champs) {
+      if (ch.admin || ch.type === 'calc') continue;
+      if (ch.type === 'photos') { if (!ch.min) continue; total++; const n = P(ch.id).length; if (n >= ch.min) done++; else out.push([sec.titre, `${ch.label} : ${n}/${ch.min} photo${ch.min > 1 ? 's' : ''}`]); continue; }
+      if (!ch.req) continue;
+      total++; if (String(v[ch.id] ?? '').trim()) done++; else out.push([sec.titre, `${ch.label} : non renseigné`]);
+    }
+  }
+  total++; if (P('sig-presta').length && String(v.sig_presta_nom || '').trim()) done++; else out.push(['Signatures', 'Signature et nom du prestataire']);
+  return { out, total, done };
+}
+
+/* ---------- Rendu : saisie ---------- */
+function fieldHTML(ch, v) {
+  if (PRESTA && ch.admin) return '';
+  const tags = (ch.req ? '<span class="req" aria-label="obligatoire">*</span>' : '') + (ch.admin ? '<span class="tag admin">Rempli par GESTRAC</span>' : '') + (ch.type === 'calc' ? '<span class="tag calc">Calculé</span>' : '') + (ch.auto ? '<span class="tag calc">Automatique depuis l\'adresse</span>' : '');
+  const id = 'f_' + ch.id, val = esc(v[ch.id] ?? '');
+  if (ch.type === 'photos') return `<div class="field"><span class="lbl">${esc(ch.label)}${tags}</span>${photoSlotHTML(ch.id, ch.min || 0, ch.label)}</div>`;
+  if (ch.type === 'calc') return `<div class="field"><span class="lbl">${esc(ch.label)}${tags}</span><div class="calcout num" data-out="calc:${ch.id}">—</div></div>`;
+  if (ch.type === 'choice') return `<div class="field" role="radiogroup" aria-labelledby="${id}_l"><span class="lbl" id="${id}_l">${esc(ch.label)}${tags}</span><div class="chips">${ch.options.map((o, i) =>
+      `<label class="chip"><input type="radio" id="${id}_${i}" name="${id}" data-k="${ch.id}" value="${esc(o)}" ${v[ch.id] === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div></div>`;
+  if (ch.type === 'textarea') return `<div class="field"><label for="${id}">${esc(ch.label)}${tags}</label><textarea class="inp" id="${id}" data-k="${ch.id}">${val}</textarea></div>`;
+  if (ch.type === 'number') return `<div class="field"><label for="${id}">${esc(ch.label)}${tags}</label><div class="unitbox"><input class="inp num" id="${id}" data-k="${ch.id}" inputmode="decimal" value="${val}" autocomplete="off"><span class="u">${esc(ch.unit || '')}</span></div></div>`;
+  return `<div class="field"><label for="${id}">${esc(ch.label)}${tags}</label><input class="inp" id="${id}" data-k="${ch.id}" type="${ch.type === 'date' ? 'date' : 'text'}" value="${val}" autocomplete="off"${ch.ph ? ` placeholder="${esc(ch.ph)}"` : ''}></div>`;
+}
+function photoSlotHTML(slot, min, label) {
+  const list = P(slot), n = list.length;
+  const cls = !min ? '' : (n >= min ? 'ok' : 'ko');
+  return `<div class="photos" data-slot-wrap="${esc(slot)}">
+    <div class="photo-head"><span class="photo-count ${cls}">${n} photo${n > 1 ? 's' : ''}${min ? ` · minimum ${min}` : ''}</span>
+      <label class="addphoto">＋ Ajouter des photos<input type="file" accept="image/*" multiple id="ph_${esc(slot)}" data-slot="${esc(slot)}" data-label="${esc(label)}"></label></div>
+    ${n ? `<div class="thumbs">${list.map((p, i) => `<div class="thumb"><img ${p.fileId ? `data-fid="${p.fileId}"` : ''} src="${p.src || ''}" alt="${esc(p.cap)}">${p._up ? '<span class="kb" data-up>Envoi…</span>' : (p.kb ? `<span class="kb">${p.kb} Ko</span>` : '')}<button class="x" data-act="del-photo" data-slot="${esc(slot)}" data-i="${i}" aria-label="Supprimer la photo">×</button></div>`).join('')}</div>` : ''}
+  </div>`;
+}
+const STATUT_DEF = {
+  inclus: "<b>Incluse</b> : cette façade sera isolée. Elle est mesurée et comptée dans la surface à isoler.",
+  option: "<b>En option</b> : elle pourrait être isolée mais n'est pas comptée dans le total principal. Elle est mesurée pour un devis à part.",
+  exclu: "<b>Exclue</b> : elle ne sera pas isolée (problème technique, refus du client, revêtement à garder…). Pas de mesures, mais explique pourquoi." };
+function facadeHTML(f, i, sec) {
+  const st = ['inclus', 'option', 'exclu'], lab = { inclus: 'Incluse', option: 'En option', exclu: 'Exclue' };
+  return `<div class="facade st-${f.statut}" data-fid="${f.id}">
+    <div class="facade-head"><input class="inp" aria-label="Nom de la façade" id="fn_${f.id}" data-fk="nom" data-f="${f.id}" value="${esc(f.nom)}"><button class="iconbtn" data-act="del-fac" data-f="${f.id}" aria-label="Supprimer la façade">🗑</button></div>
+    <div class="seg" role="radiogroup" aria-label="Statut de la façade">${st.map(s => `<label class="chip s-${s}"><input type="radio" name="fs_${f.id}" id="fs_${f.id}_${s}" data-fk="statut" data-f="${f.id}" value="${s}" ${f.statut === s ? 'checked' : ''}><span>${lab[s]}</span></label>`).join('')}</div>
+    <div class="hint">${STATUT_DEF[f.statut]}</div>
+    ${f.statut !== 'inclus' ? `<div class="field"><label for="fc_${f.id}">${f.statut === 'exclu' ? 'Pourquoi cette façade est exclue ?<span class="req">*</span>' : 'Commentaire sur cette option'}</label><textarea class="inp" id="fc_${f.id}" data-fk="commentaire" data-f="${f.id}" placeholder="${f.statut === 'exclu' ? 'Ex. : fissure, refus du client, revêtement à conserver…' : 'Ex. : à chiffrer séparément, accès difficile…'}">${esc(f.commentaire || '')}</textarea></div>` : ''}
+    ${f.statut === 'exclu' ? '' : `
+    <div class="seg two" role="radiogroup" aria-label="Forme de la façade">${[['rect', 'Rectangulaire'], ['pignon', 'Avec pignon (pointe)']].map(([k, l]) => `<label class="chip"><input type="radio" name="ff_${f.id}" id="ff_${f.id}_${k}" data-fk="forme" data-f="${f.id}" value="${k}" ${(f.forme || 'rect') === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
+    <div class="grid2">
+      <div class="field"><label for="fl_${f.id}">Largeur<span class="req">*</span></label><div class="unitbox"><input class="inp num" id="fl_${f.id}" inputmode="decimal" data-fk="largeur" data-f="${f.id}" value="${esc(f.largeur)}"><span class="u">m</span></div></div>
+      <div class="field"><label for="fh_${f.id}">${f.forme === 'pignon' ? 'Hauteur à l\'égout (gouttière)' : 'Hauteur'}<span class="req">*</span></label><div class="unitbox"><input class="inp num" id="fh_${f.id}" inputmode="decimal" data-fk="hauteur" data-f="${f.id}" value="${esc(f.hauteur)}"><span class="u">m</span></div></div>
+      ${f.forme === 'pignon' ? `<div class="field"><label for="fp_${f.id}">Hauteur au faîtage (pointe)<span class="req">*</span></label><div class="unitbox"><input class="inp num" id="fp_${f.id}" inputmode="decimal" data-fk="faitage" data-f="${f.id}" value="${esc(f.faitage || '')}"><span class="u">m</span></div></div>
+      <div class="field"><span class="lbl">Hauteur moyenne<span class="tag calc">Calculé</span></span><div class="calcout num" data-out="fhm:${f.id}">—</div></div>` : ''}
+    </div>
+    ${f.forme === 'pignon' ? '<div class="hint">Hauteur moyenne = hauteur à l\'égout + (hauteur au faîtage − hauteur à l\'égout) ÷ 2. C\'est elle qui sert au calcul de la surface.</div>' : ''}
+    <div class="ouv-title"><span>Ouvertures à déduire</span><span class="photo-count">${f.ouvertures.length}</span></div>
+    ${f.ouvertures.length ? `<div class="ouv-grid"><span class="h">Type</span><span class="h">Qté</span><span class="h">Largeur m</span><span class="h">Hauteur m</span><span></span>
+      ${f.ouvertures.map(o => `
+        <select class="inp" aria-label="Type d'ouverture" id="ot_${o.id}" data-ok="type" data-f="${f.id}" data-o="${o.id}">${Object.entries(TYPES_OUV).map(([k, l]) => `<option value="${k}" ${o.type === k ? 'selected' : ''}>${k === 'A' ? 'Autre' : k}</option>`).join('')}</select>
+        <input class="inp num" aria-label="Quantité" id="oq_${o.id}" inputmode="numeric" data-ok="qte" data-f="${f.id}" data-o="${o.id}" value="${esc(o.qte)}">
+        <input class="inp num" aria-label="Largeur en mètres" id="ol_${o.id}" inputmode="decimal" data-ok="l" data-f="${f.id}" data-o="${o.id}" value="${esc(o.l)}">
+        <input class="inp num" aria-label="Hauteur en mètres" id="oh_${o.id}" inputmode="decimal" data-ok="h" data-f="${f.id}" data-o="${o.id}" value="${esc(o.h)}">
+        <button class="iconbtn" data-act="del-ouv" data-f="${f.id}" data-o="${o.id}" aria-label="Supprimer l'ouverture">×</button>
+        <span class="ouv-s num" data-out="ouv:${o.id}">—</span>`).join('')}</div>` : ''}
+    <div><button class="ghost" data-act="add-ouv" data-f="${f.id}">＋ Ajouter une ouverture</button></div>
+    <div class="fsum num" data-out-cls="fac:${f.id}"><span>Brute <b data-out="fb:${f.id}">—</b></span><span>Ouvertures <b data-out="fd:${f.id}">—</b></span><span>Nette <b data-out="fn:${f.id}">—</b></span></div>
+    <div class="field"><span class="lbl">Photos de la façade</span><div class="aide">📷 Prends au moins ${sec.photosMin} photos en reculant au maximum (le plus grand angle possible) : toute la façade doit être visible, avec ses fenêtres, portes, coffrets et descentes d'eau.</div>${photoSlotHTML('fac-' + f.id, sec.photosMin, f.nom)}</div>`}
+  </div>`;
+}
+function surfaceHTML(x) {
+  return `<div class="facade" data-sid="${x.id}">
+    <div class="facade-head"><input class="inp" aria-label="Description de la surface" placeholder="Description (ex. : hangar principal)" id="sn_${x.id}" data-sk="nom" data-s="${x.id}" value="${esc(x.nom)}"><button class="iconbtn" data-act="del-surf" data-s="${x.id}" aria-label="Supprimer la surface">🗑</button></div>
+    <div class="grid2">
+      <div class="field"><label for="sl_${x.id}">Longueur</label><div class="unitbox"><input class="inp num" id="sl_${x.id}" inputmode="decimal" data-sk="longueur" data-s="${x.id}" value="${esc(x.longueur)}"><span class="u">m</span></div></div>
+      <div class="field"><label for="sw_${x.id}">Largeur</label><div class="unitbox"><input class="inp num" id="sw_${x.id}" inputmode="decimal" data-sk="largeur" data-s="${x.id}" value="${esc(x.largeur)}"><span class="u">m</span></div></div>
+    </div>
+    <div class="field"><label for="sd_${x.id}">Ou surface relevée directement (forme irrégulière)</label><div class="unitbox"><input class="inp num" id="sd_${x.id}" inputmode="decimal" data-sk="directe" data-s="${x.id}" value="${esc(x.directe)}"><span class="u">m²</span></div></div>
+    <div class="fsum num"><span>Surface <b data-out="ss:${x.id}">—</b></span></div>
+    <div class="field"><label for="so_${x.id}">Observation sur cette surface</label><textarea class="inp" id="so_${x.id}" data-sk="observation" data-s="${x.id}">${esc(x.observation || '')}</textarea></div>
+    <div class="field"><span class="lbl">Photos de la surface<span class="req">*</span></span>${photoSlotHTML('surf-' + x.id, 1, x.nom || 'Surface')}</div>
+  </div>`;
+}
+function renderSaisie() {
+  const t = T(), st = S();
+  let h = `${missionPanel()}<div class="intro"><div class="intro-row"><strong>${esc(t.sous)}</strong></div>
+    <span>Conseil : prends les photos avec l'appareil photo du téléphone, puis ajoute-les depuis la photothèque, pour en garder une copie.</span>
+    ${PRESTA ? '' : `<div class="btnrow"><button class="ghost" data-act="copy">Copier les données</button><button class="linkbtn" data-act="suppr">${pendingClear === 'suppr' ? 'Confirmer : supprimer cette visite ?' : 'Supprimer cette visite'}</button></div>`}
+    <div id="copyOut"></div></div>
+    <div id="checkPanel"></div>`;
+  for (const sec of t.sections) {
+    if (PRESTA && sec.admin) continue;
+    h += `<section class="sec ${sec.admin ? 'admin-sec' : ''}"><h2><span>${esc(sec.titre)}</span><span class="count" data-out-sec="${sec.id}"></span></h2><div class="sec-body">`;
+    if (sec.facades) {
+      if (sec.statutAide) h += `<div class="defs"><span>Pour chaque façade, choisis un statut :</span><span>${STATUT_DEF.inclus.replace('<b>', '<b class="s-inclus">')}</span><span>${STATUT_DEF.option.replace('<b>', '<b class="s-option">')}</span><span>${STATUT_DEF.exclu.replace('<b>', '<b class="s-exclu">')}</span></div>`;
+      h += st.facades.map((f, i) => facadeHTML(f, i, sec)).join('');
+      h += `<div><button class="ghost" data-act="add-fac">＋ Ajouter une façade</button></div><div class="totals" id="iteTotals"></div>`;
+    } else if (sec.surfaces) {
+      h += `<div class="aide">Ajoute une surface seulement s'il y a quelque chose à mesurer. Chaque surface ajoutée demande une description, ses dimensions (ou sa surface directe) et au moins une photo. Sans surface, cette rubrique n'apparaît pas dans le rapport.</div>`;
+      h += (st.surfaces || []).map(surfaceHTML).join('');
+      h += `<div><button class="ghost" data-act="add-surf">＋ Ajouter une surface</button></div>${(st.surfaces || []).length ? '<div class="totals" id="surfTotals"></div>' : ''}`;
+    } else {
+      const ch = sec.champs;
+      if (sec.highlight === 'pac') h += `<div class="aide">Tout est calculé automatiquement à partir de l'adresse, de la surface, de la hauteur sous plafond et de la période de construction. Il n'y a rien à saisir ici.</div><div id="pacWarn"></div>`;
+      h += ch.map(c => fieldHTML(c, st.values)).join('');
+    }
+    h += `</div></section>`;
+  }
+  h += signaturesHTML();
+  document.getElementById('main').innerHTML = h;
+  initSignatures();
+  refresh();
+  chargerPhotos();
+}
+function refresh() {
+  const t = T(), st = S(), c = compute(), outs = {};
+  for (const [k, val] of Object.entries(c.calc)) { const ch = t.sections.flatMap(s => s.champs || []).find(x => x.id === k); outs['calc:' + k] = calcText(ch, val); }
+  if (c.ite) {
+    for (const r of c.ite.rows) {
+      outs['fb:' + r.f.id] = r.brut == null ? '—' : fmt(r.brut) + ' m²';
+      outs['fhm:' + r.f.id] = r.H == null ? '—' : fmt(r.H) + ' m';
+      outs['fd:' + r.f.id] = '−' + fmt(r.ded) + ' m²';
+      outs['fn:' + r.f.id] = r.net == null ? '—' : fmt(r.net) + ' m²';
+      for (const o of r.ouv) outs['ouv:' + o.id] = o.s == null ? 'Dimensions manquantes' : `${TYPES_OUV[o.type]} · ${o.q > 1 ? o.q + ' × ' : ''}${fmt(o.l)} × ${fmt(o.h)} = ${fmt(o.s)} m²`;
+      const box = document.querySelector(`[data-out-cls="fac:${r.f.id}"]`);
+      if (box) box.classList.toggle('err', r.net != null && r.net < 0);
+    }
+    const tt = c.ite.tot, el = document.getElementById('iteTotals');
+    if (el) el.innerHTML = `<h3>Récapitulatif · ${tt.n} façade${tt.n > 1 ? 's' : ''} incluse${tt.n > 1 ? 's' : ''}</h3>
+      <div class="trow"><span>Surface brute totale</span><span>${fmt(tt.brut)} m²</span></div>
+      <div class="trow"><span>Déductions menuiseries</span><span>−${fmt(tt.ded)} m²</span></div>
+      <div class="trow big"><span>Surface nette ITE</span><span>${fmt(tt.net)} m²</span></div>
+      <div class="trow sub"><span>Tableaux & voussures</span><span>${fmt(tt.tab)} ml</span></div>
+      <div class="trow sub"><span>Appuis de fenêtres</span><span>${fmt(tt.app)} ml</span></div>
+      <div class="trow sub"><span>Baguettes d'angle</span><span>${fmt(tt.bag)} ml</span></div>
+      ${c.ite.options.length ? `<div class="trow sub"><span>En option (${c.ite.options.map(r => esc(r.f.nom)).join(', ')})</span><span>${fmt(c.ite.options.reduce((a, r) => a + (r.net ?? 0), 0))} m²</span></div>` : ''}
+      <div class="formula">Brute = L × H · Nette = brute − Σ(qté × l × h) · Tableaux = Σ qté × (2h + l) · Appuis = Σ largeurs des fenêtres F · Baguettes = Σ qté × 2(l + h). Les ouvertures « Autre » sont déduites mais n'entrent pas dans les ml.</div>`;
+  }
+  if (c.surf) {
+    for (const r of c.surf.rows) outs['ss:' + r.x.id] = r.s == null ? '—' : fmt(r.s) + ' m²' + (r.directe ? ' (relevée directement)' : r.L != null ? ` (${fmt(r.L)} × ${fmt(r.l)})` : '');
+    const el = document.getElementById('surfTotals');
+    if (el) el.innerHTML = `<h3>Récapitulatif · ${c.surf.rows.length} surface${c.surf.rows.length > 1 ? 's' : ''}</h3><div class="trow big"><span>Surface totale</span><span>${fmt(c.surf.total)} m²</span></div>`;
+  }
+  document.querySelectorAll('[data-out]').forEach(e => { e.textContent = outs[e.dataset.out] ?? '—'; });
+  const pw = document.getElementById('pacWarn');
+  if (pw) pw.innerHTML = c.pac.warn.map(m => `<div class="warnline">⚠ ${esc(m)}</div>`).join('');
+  // compteurs par section + progression
+  const val = validate();
+  lastCheck = val;
+  for (const sec of t.sections) {
+    const e = document.querySelector(`[data-out-sec="${sec.id}"]`); if (!e) continue;
+    const miss = val.out.filter(m => m[0] === sec.titre).length;
+    if (sec.admin) { e.textContent = 'GESTRAC'; e.className = 'count'; continue; }
+    e.textContent = miss ? `${miss} à compléter` : 'Complet'; e.className = 'count' + (miss ? '' : ' done');
+  }
+  document.getElementById('progTxt').textContent = `${val.done} / ${val.total} éléments obligatoires`;
+  document.getElementById('progBar').style.width = (val.total ? val.done / val.total * 100 : 0) + '%';
+  const sv = document.getElementById('saved');
+  if (sv) sv.textContent = savedAt ? `Brouillon enregistré sur cet appareil à ${savedAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}, photos comprises.` : '';
+}
+
+/* ---------- Rendu : rapport ---------- */
+function choiceLine(ch, v) {
+  if (ch.options.length > 4) return esc(v ?? '');
+  return ch.options.map(o => `<b>[${v === o ? 'X' : '&nbsp;'}]</b> ${esc(o)}`).join(' &nbsp;');
+}
+function imgTag(p) {
+  if (!PDF) return `<img ${p.fileId ? `data-fid="${p.fileId}"` : ''} src="${p.src || ''}" alt="">`;
+  let w = 320, h = 240;
+  if (p.w && p.h) { const k = Math.min(320 / p.w, 240 / p.h); w = Math.round(p.w * k); h = Math.round(p.h * k); }
+  return `<img src="vt-photo:${p.fileId}" width="${w}" height="${h}" alt="">`;
+}
+function photosBlock(slot, caption, fallbackCount) {
+  const list = P(slot).filter(p => !PDF || p.fileId);
+  if (!list.length && PDF) return '';
+  const cells = list.length ? list.map((p, i) => `<td><div class="fig">${imgTag(p)}</div><div class="cap">${p.legende ? esc(p.legende) : esc(caption) + (list.length > 1 ? ' — ' + (i + 1) : '')}${T().horodatage && p.prise ? `<br>Prise le ${esc(p.prise)}` : ''}</div></td>`)
+    : Array.from({ length: Math.max(1, Math.min(fallbackCount || 1, 2)) }, () => `<td><div class="ph">Photo à fournir</div><div class="cap">${esc(caption)}</div></td>`);
+  let rows = '';
+  for (let i = 0; i < cells.length; i += 2) rows += `<tr>${cells[i]}${cells[i + 1] || '<td></td>'}</tr>`;
+  return `<table class="r-photos">${rows}</table>`;
+}
+const nl = s => esc(s).replace(/\n/g, '<br>');
+function rapportHTML() {
+  const t = T(), st = S(), v = st.values, c = compute(), val = validate();
+  let n = 0, body = '';
+  for (const sec of t.sections) {
+    if (sec.facades) {
+      const ite = c.ite, act = ite.rows.filter(r => r.f.statut !== 'exclu');
+      let rows = '';
+      for (const r of ite.rows.filter(r => r.f.statut === 'inclus')) {
+        const o = r.ouv.length ? r.ouv : [null];
+        o.forEach((x, k) => {
+          rows += `<tr><td>${k ? '' : esc(r.f.nom) + (r.pignon ? `<br><span class="r-note">Pignon : égout ${fmt(r.Hg)} m · faîtage ${fmt(r.Hf)} m → hauteur moyenne ${fmt(r.H)} m</span>` : '')}</td><td class="n">${k ? '' : fmt(r.L)}</td><td class="n">${k ? '' : fmt(r.H)}</td><td class="n">${k ? '' : fmt(r.brut)}</td>
+            <td>${x ? x.type === 'A' ? 'Autre' : x.type : '—'}</td><td class="n">${x ? x.q : '—'}</td><td class="n">${x ? `${fmt(x.l)}×${fmt(x.h)}` : '—'}</td><td class="n">${x ? fmt(x.s) : '—'}</td><td class="n"><b>${k ? '' : fmt(r.net)}</b></td></tr>`;
+        });
+      }
+      body += `<div class="r-sec"><div class="hb">${ROM[n++]}. ${esc(sec.titre)}</div><div class="r-scroll"><table class="r-tab data"><thead><tr><th>Façade</th><th class="n">Larg. (m)</th><th class="n">Haut. (m)</th><th class="n">S. brute (m²)</th><th>Type</th><th class="n">Qté</th><th class="n">L×H</th><th class="n">S. (m²)</th><th class="n">S. nette (m²)</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <table class="r-tab data"><thead><tr><th>Récapitulatif</th><th class="n">Valeur</th><th class="n">Unité</th></tr></thead><tbody>
+        <tr><td>Surface brute totale</td><td class="n">${fmt(ite.tot.brut)}</td><td class="n">m²</td></tr>
+        <tr><td>Déductions menuiseries (F / PF / P)</td><td class="n">${fmt(ite.tot.ded)}</td><td class="n">m²</td></tr>
+        <tr class="hl"><td>Surface nette ITE</td><td class="n">${fmt(ite.tot.net)}</td><td class="n">m²</td></tr>
+        ${num(v.marge) ? `<tr class="hl"><td>Surface nette avec marge d'erreur de ${fmt(num(v.marge), num(v.marge) % 1 ? 1 : 0)} %</td><td class="n">${fmt(ite.tot.net * (1 + num(v.marge) / 100))}</td><td class="n">m²</td></tr>` : ''}
+        ${t.id === 'ite-avant' ? `<tr><td>Tableaux & voussures</td><td class="n">${fmt(ite.tot.tab)}</td><td class="n">ml</td></tr><tr><td>Appuis de fenêtres</td><td class="n">${fmt(ite.tot.app)}</td><td class="n">ml</td></tr><tr><td>Baguettes d'angle</td><td class="n">${fmt(ite.tot.bag)}</td><td class="n">ml</td></tr>` : ''}
+        </tbody></table>
+        ${ite.options.map(r => `<div class="r-box" style="margin-top:8px"><table class="big"><tr><td>EN OPTION — ${esc(r.f.nom)}</td><td class="bn">${fmt(r.net)} m²</td></tr></table><span class="r-note">Non inclus dans le chiffrage principal.${r.f.commentaire ? ' ' + esc(r.f.commentaire) : ''}</span></div>`).join('')}
+        ${ite.exclues.map(r => `<div class="r-box warnb" style="margin-top:8px"><table class="big"><tr><td>EXCLUE — ${esc(r.f.nom)}</td></tr></table><span class="r-note">Aucune isolation prévue sur cette façade.${r.f.commentaire ? ' ' + esc(r.f.commentaire) : ''}</span></div>`).join('')}
+        <div class="r-cap">Photos de terrain</div>
+        ${act.map(r => photosBlock('fac-' + r.f.id, r.f.nom, 2)).join('')}
+      </div>`;
+      continue;
+    }
+    if (sec.surfaces) {
+      const sf = c.surf; if (!sf.rows.length) continue;
+      body += `<div class="r-sec"><div class="hb">${ROM[n++]}. ${esc(sec.titre)}</div><div class="r-scroll"><table class="r-tab data"><thead><tr><th>Désignation</th><th class="n">Long. (m)</th><th class="n">Larg. (m)</th><th class="n">Surface (m²)</th></tr></thead><tbody>
+        ${sf.rows.map(r => `<tr><td>${esc(r.x.nom)}</td><td class="n">${r.directe ? '—' : fmt(r.L)}</td><td class="n">${r.directe ? '—' : fmt(r.l)}</td><td class="n">${fmt(r.s)}${r.directe ? ' *' : ''}</td></tr>`).join('')}
+        <tr class="hl"><td>Surface totale</td><td></td><td></td><td class="n">${fmt(sf.total)}</td></tr></tbody></table></div>
+        ${sf.rows.some(r => r.directe) ? '<span class="r-note" style="padding:4px 10px">* Surface relevée directement (forme irrégulière).</span>' : ''}
+        ${sf.rows.map(r => `<div class="r-cap">${esc(r.x.nom)} — ${fmt(r.s)} m²</div>${r.x.observation ? `<div class="r-text">${nl(r.x.observation)}</div>` : ''}${photosBlock('surf-' + r.x.id, r.x.nom, 1)}`).join('')}
+      </div>`;
+      continue;
+    }
+    if (sec.horsRapport) continue;
+    const filled = sec.champs.filter(ch => (ch.type === 'photos' && !(PDF && !P(ch.id).length)) || (ch.type === 'calc' ? c.calc[ch.id] != null : String(v[ch.id] ?? '').trim()));
+    if (!filled.length) continue; // rubrique vide : elle n'apparaît pas
+    let inner = '';
+    const plain = filled.filter(ch => ch.type !== 'photos' && ch.type !== 'textarea' && !(sec.highlight === 'pac' && (ch.id === 'deperd' || ch.id === 'puissance')));
+    if (plain.length) inner += `<table class="r-tab"><tbody>${plain.map(ch => `<tr><td>${esc(ch.label)}</td><td>${
+      ch.type === 'choice' ? choiceLine(ch, v[ch.id]) : ch.type === 'calc' ? `${esc(calcText(ch, c.calc[ch.id]))}<span class="calcmark">calculé</span>` : ch.type === 'date' ? dateFr(v[ch.id]) : esc(v[ch.id]) + (ch.unit ? ' ' + esc(ch.unit) : '')}</td></tr>`).join('')}</tbody></table>`;
+    for (const ch of filled.filter(ch => ch.type === 'textarea')) inner += `<div class="r-text">${nl(v[ch.id])}</div>`;
+    if (sec.highlight === 'pac') inner = `<div class="r-disclaimer">GESTRAC ne dispose pas des qualifications pour réaliser une note de dimensionnement. Les valeurs ci-dessous sont données à titre purement informatif et doivent être vérifiées par l'installateur ou un bureau d'études thermiques (calcul NF EN 12831) avant tout choix de matériel.</div>` + inner + (c.pac.P != null ? `<div class="r-box" style="margin-top:8px"><table class="big"><tr><td>Puissance de déperdition estimée</td><td class="bn">${fmt(c.pac.P, 1)} kW</td></tr><tr><td>Puissance PAC indicative</td><td class="bn">${fmt(c.pac.Ppac, 1)} kW</td></tr></table><span class="r-note">Méthode simplifiée : déperdition = G × volume × (${T_INT} °C − température de base). Puissance indicative = déperdition × 1,2. Température de base : tableau départemental corrigé de l'altitude. Coefficient G : valeur forfaitaire selon la période de construction.</span>${c.pac.warn.map(m => `<span class="warn">⚠ ${esc(m)}</span>`).join('')}</div>` : `<div class="r-box warnb" style="margin-top:8px"><span class="warn">Calcul impossible : ${esc(c.pac.warn.join(' · '))}</span></div>`);
+    if (sec.highlight === 'ecart' && c.calc.ecart != null) {
+      const e = c.calc.ecart, m = num(v.marge) || 0, lim = c.ite.tot.net * (1 + m / 100), hors = num(v.surface_declaree) - lim, ko = hors > 0;
+      inner += `<div class="r-box ${ko ? 'warnb' : ''}" style="margin-top:8px"><table class="big"><tr><td>${ko ? (m ? `Surface annoncée supérieure à la mesure, au-delà de la marge de ${fmt(m, m % 1 ? 1 : 0)} %` : 'Surface annoncée supérieure à la surface mesurée') : (m ? `Surface annoncée conforme, dans la marge de ${fmt(m, m % 1 ? 1 : 0)} %` : 'Surface annoncée conforme ou inférieure à la mesure')}</td><td class="bn">${e > 0 ? '+' : ''}${fmt(e)} m² (${e > 0 ? '+' : ''}${fmt(c.calc.ecart_pct, 1)} %)</td></tr></table>
+        <span class="r-note">Annoncée : ${esc(v.surface_declaree)} m² · mesurée lors du contrôle : ${fmt(c.ite.tot.net)} m²${m ? ` · mesurée avec marge de ${fmt(m, m % 1 ? 1 : 0)} % : ${fmt(lim)} m²${ko ? ` · dépassement au-delà de la marge : ${fmt(hors)} m²` : ''}` : ''}.</span></div>`;
+    }
+    for (const ch of filled.filter(ch => ch.type === 'photos' && !(PDF && !P(ch.id).length))) inner += `<div class="r-cap">${esc(ch.label)}</div>${photosBlock(ch.id, ch.label, ch.min)}`;
+    body += `<div class="r-sec"><div class="hb">${ROM[n++]}. ${esc(sec.titre)}</div>${inner}</div>`;
+  }
+  body += validationHTML(n++, v);
+  return `<table class="r-head"><tr><td><img src="${LOGO}" width="170" alt="GESTRAC"></td><td class="rt"><b class="t">RAPPORT DE VISITE TECHNIQUE</b><br><span class="s">${esc(t.sous)}</span><br>Date de visite : <b>${dateFr(v.date)}</b>${v.donneur ? `<br>Pour le compte de : <b>${esc(v.donneur)}</b>` : ''}</td></tr></table>
+    ${body}
+    <div class="r-foot">${esc(ENTREPRISE.nom)} – ${esc(ENTREPRISE.baseline)} | ${esc(ENTREPRISE.controleur)}</div>`;
+}
+
+function compress(file) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const max = 1600, k = Math.min(1, max / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      const src = cv.toDataURL('image/jpeg', 0.72);
+      res({ src, kb: Math.round(src.length * 0.75 / 1024), w: cv.width, h: cv.height });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image illisible')); };
+    img.src = url;
+  });
+}
+const PDF_CSS = "*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4;margin:12mm 11mm}body{font-family:Arial,Helvetica,sans-serif;font-size:10pt;color:#1E2624;margin:0}table{border-collapse:collapse;width:100%}.r-head{border-bottom:2px solid #06796B;margin-bottom:8px}.r-head td{vertical-align:top;padding-bottom:10px}.rt{text-align:right;line-height:1.6}.t{color:#06796B;font-size:14pt}.s{color:#6B7775}.r-sec{margin-top:10px}.hb{background-color:#06796B;color:#FFFFFF;font-weight:bold;padding:5px 8px;text-transform:uppercase;font-size:9.5pt}.r-tab td,.r-tab th{padding:4px 7px;border-bottom:1px solid #DCE5E2;text-align:left;vertical-align:top;font-size:9.5pt}.r-tab th{background-color:#F2F7F5;border-bottom:2px solid #06796B;font-size:8pt}.r-tab td.n,.r-tab th.n{text-align:right}tr.hl td{background-color:#DFF0EC;color:#06796B;font-weight:bold}.calcmark{color:#06796B;font-size:7pt;font-weight:bold}.r-note{color:#6B7775;font-size:8pt}.r-cap{color:#06796B;font-weight:bold;padding:8px 6px 2px}.r-photos td{width:50%;text-align:center;vertical-align:top;padding:4px}.cap{color:#6B7775;font-style:italic;font-size:8pt}.r-box{border:1px solid #06796B;background-color:#EAF5F2;padding:6px 10px;margin-top:6px}.r-box.warnb{border:1px solid #C46A12;background-color:#FDF1E4}.big td{color:#06796B;font-weight:bold;font-size:10.5pt;padding:2px 0}.big td.bn{text-align:right}.warnb .big td{color:#9A4E06}.warn{color:#9A4E06;font-size:8pt;font-weight:bold}.r-disclaimer{border:1px solid #B42318;background-color:#FCECEA;color:#7A1A12;padding:6px 10px;font-weight:bold;font-size:9pt}.r-text{padding:6px 7px}.r-sign td{height:60px;vertical-align:top;border-bottom:1px solid #DCE5E2;width:50%;padding:6px}.r-sign-ok td{height:auto;border-bottom:0}.r-foot{border-top:1px solid #DCE5E2;margin-top:14px;padding-top:6px;text-align:center;color:#6B7775;font-size:8pt}";
+/* ---------- Connexion au serveur (Google Apps Script) ---------- */
+let CLE = '', JETON = '', PRESTA = false, CLIENT = false, JETONC = '';
+try { CLE = localStorage.getItem('vt-cle') || ''; } catch (e) {}
+/* Écrans hébergés hors de Google (config.js définit l'adresse du serveur) ou servis par Apps Script */
+const SITE_API = String(window.VISITRAC_API || '');
+const run = (fn, ...args) => SITE_API
+  ? fetch(SITE_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn, args, site: fn === 'api' ? location.origin + location.pathname : '' }) })
+      .then(r => { if (!r.ok) throw new Error('Le serveur VisiTrac ne répond pas (erreur ' + r.status + '). Réessaie dans un instant.'); return r.json(); },
+        () => { throw new Error('Connexion impossible : vérifie ta connexion internet, puis réessaie.'); })
+      .then(o => { if (!o || !o.ok) throw new Error((o && o.error) || 'Réponse inattendue du serveur.'); return o.data; })
+  : new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(e => rej(e && e.message ? e : new Error(String(e))))[fn](...args));
+const api = (action, p) => run('api', CLE, action, p || {});
+const call = (action, p) => PRESTA ? run('apiP', JETON, action, p || {}) : api(action, p);
+const apiC = (action, p) => run('apiC', JETONC, action, p || {});
+
+/* ---------- État ---------- */
+let vue = CLE ? 'missions' : 'connexion', mode = 'saisie', V = null, liste = null, REFD = null, PDF = false, pendingClear = null;
+let filtre = 'actives', recherche = '', ficheClient = null, fichePresta = null;
+const T = () => TRAMES.find(t => t.id === V.trame);
+const S = () => V.donnees;
+const P = slot => ((V.donnees.photos ||= {})[slot] ||= []);
+const cachePhotos = new Map();
+const VERROU = ['Soumise', 'Rapport généré', 'Rapport envoyé'];
+const FINIS = ['Rapport généré', 'Rapport envoyé'];
+function vierge(id) { const t = TRAMES.find(x => x.id === id); return { values: { date: today() }, facades: t.ite ? [fac('Façade 1', 'inclus', null, null)] : [], surfaces: [], photos: {} }; }
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const nomTrame = id => (TRAMES.find(t => t.id === id) || { court: id }).court;
+const $ = id => document.getElementById(id);
+async function chargerRef(force) { if (!REFD || force) REFD = await api('referentiel'); return REFD; }
+
+/* Calculs de la visite en cours */
+function compute() {
+  const t = T(), st = S(), v = st.values, c = { ite: t.ite ? iteMetres(st.facades) : null, surf: t.sections.some(x => x.surfaces) ? surfMetres(st.surfaces ||= []) : null, pac: pacDim(v), calc: {} };
+  for (const sec of t.sections) for (const ch of (sec.champs || [])) if (ch.type === 'calc') { try { c.calc[ch.id] = ch.calc(v, c); } catch (e) { c.calc[ch.id] = null; } }
+  return c;
+}
+const calcText = (ch, val) => val == null ? '—' : (typeof val === 'string' ? `${val} ${ch.unit || ''}` : `${fmt(val, ch.dec ?? 2)} ${ch.unit || ''}`).trim();
+
+/* Enregistrement automatique : 1,2 s après la dernière modification, avec nouvel essai si le réseau coupe */
+let tSave = null, enCours = false, aRefaire = false, etat = 'ok';
+const propre = d => JSON.parse(JSON.stringify(d, (k, val) => (k === 'src' || k === '_up') ? undefined : val));
+function save() {
+  if (!V) return;
+  try { localStorage.setItem('vt-sauv-' + V.id, JSON.stringify(propre(V.donnees))); } catch (e) {}
+  setEtat('attente');
+  clearTimeout(tSave); tSave = setTimeout(envoyer, 1200);
+}
+async function envoyer() {
+  if (!V) return;
+  if (enCours) { aRefaire = true; return; }
+  enCours = true; setEtat('envoi');
+  const donnees = propre(V.donnees);
+  try { await call('enregistrer', { id: V.id, donnees }); setEtat(aRefaire ? 'attente' : 'ok'); }
+  catch (e) { setEtat('erreur', e.message); clearTimeout(tSave); if (!['transmise', 'annulée', 'plus valable'].some(w => String(e.message).includes(w))) tSave = setTimeout(envoyer, 10000); else alertePanel(e.message); }
+  enCours = false;
+  if (aRefaire) { aRefaire = false; envoyer(); }
+}
+async function flush() { clearTimeout(tSave); if (etat !== 'ok' || enCours) { await envoyer(); while (enCours) await new Promise(r => setTimeout(r, 200)); } }
+function setEtat(e, msg) {
+  etat = e;
+  const el = $('etat'); if (!el) return;
+  el.className = 'pill ' + (e === 'ok' ? 'p-ok' : e === 'erreur' ? 'p-ko' : 'p-wait');
+  el.textContent = e === 'ok' ? 'Enregistré' : e === 'erreur' ? 'Hors ligne · nouvel essai…' : 'Enregistrement…';
+  el.title = msg || '';
+}
+window.addEventListener('beforeunload', e => { if (etat !== 'ok' || document.querySelector('[data-up]')) { e.preventDefault(); e.returnValue = ''; } });
+
+/* Charge depuis le Drive les photos qui ne sont pas déjà sur ce téléphone */
+let chargement = false;
+async function chargerPhotos() {
+  if (chargement || !V) return; chargement = true;
+  try {
+    for (const list of Object.values(V.donnees.photos || {})) for (const p of list) {
+      if (p.src || !p.fileId) continue;
+      if (!cachePhotos.has(p.fileId)) { try { cachePhotos.set(p.fileId, await call('lirePhoto', { fileId: p.fileId })); } catch (e) { continue; } }
+      p.src = cachePhotos.get(p.fileId);
+      document.querySelectorAll(`img[data-fid="${p.fileId}"]`).forEach(i => { i.src = p.src; });
+    }
+  } finally { chargement = false; }
+}
+
+/* ---------- Petits outils de formulaire ---------- */
+const champ = (id, label, val, o = {}) => `<div class="field"><label for="${id}">${esc(label)}${o.req ? '<span class="req">*</span>' : ''}</label>${o.area
+  ? `<textarea class="inp" id="${id}">${esc(val || '')}</textarea>`
+  : `<input class="inp" id="${id}" type="${o.type || 'text'}" value="${esc(val || '')}" autocomplete="off"${o.ph ? ` placeholder="${esc(o.ph)}"` : ''}>`}</div>`;
+const valeur = id => ($(id) ? $(id).value.trim() : '');
+const optionsHTML = (opts, sel) => opts.map(([v, l]) => `<option value="${esc(v)}" ${v === sel ? 'selected' : ''}>${esc(l)}</option>`).join('');
+function message(id, ok, titre, texte) { const el = $(id); if (el) el.innerHTML = `<div class="panel ${ok ? 'okp' : 'ko'}"><h3>${esc(titre)}</h3>${texte ? `<span>${texte}</span>` : ''}</div>`; }
+function copier(txt, id) {
+  const show = ok => { const el = $(id); if (el) el.innerHTML = `<div class="panel ${ok ? 'okp' : 'ko'}"><h3>${ok ? 'Lien copié' : 'Copie automatique impossible'}</h3><span>${ok ? 'Colle-le dans WhatsApp, un SMS ou un e-mail.' : 'Sélectionne le lien ci-dessous et copie-le.'}</span><input class="inp" id="${id}-txt" value="${esc(txt)}" readonly></div>`; if (!ok) { const i = $(id + '-txt'); i.focus(); i.select(); } };
+  try { navigator.clipboard.writeText(txt).then(() => show(true), () => show(false)); } catch (e) { show(false); }
+}
+const STATUTS = ['À attribuer', 'À envoyer', 'Envoyée', 'En cours', 'Complément demandé', 'Soumise', 'Rapport généré', 'Rapport envoyé'];
+const stCls = s => FINIS.includes(s) ? 'st-ok' : s === 'Soumise' ? 'st-new' : s === 'Complément demandé' ? 'st-ko' : '';
+
+/* ---------- Écrans administrateur ---------- */
+function renderConnexion(msg) {
+  $('main').innerHTML = `
+    <section class="sec"><h2><span>Connexion</span></h2><div class="sec-body">
+      <form id="fConnexion" class="field"><label for="cle">Code d'accès VisiTrac</label>
+        <input class="inp" id="cle" autocomplete="off" autocapitalize="characters" placeholder="Ex. : 3F9A2C71BE">
+        ${msg ? `<div class="warnline">${esc(msg)}</div>` : ''}
+        <button class="primary" type="submit">Se connecter</button>
+        <span class="admin-note">Le code s'affiche dans l'éditeur Apps Script quand tu lances la fonction « installer ». Il est retenu sur cet appareil.</span>
+      </form></div></section>`;
+  $('fConnexion').addEventListener('submit', async e => {
+    e.preventDefault();
+    CLE = $('cle').value.trim().toUpperCase();
+    try { await api('ping'); try { localStorage.setItem('vt-cle', CLE); } catch (er) {} vue = 'missions'; render(); }
+    catch (er) { CLE = ''; renderConnexion(er.message); }
+  });
+}
+function erreurAcces(e) { if (String(e.message).includes("Code d'accès")) { CLE = ''; vue = 'connexion'; render(); return true; } return false; }
+
+async function renderMissions() {
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">Missions</strong><button class="primary" data-nav="nouvelle">＋ Nouvelle mission</button></div>
+    <div class="chips" id="filtres"></div>
+    <input class="inp" id="recherche" placeholder="Rechercher un client, une adresse, un prestataire…" value="${esc(recherche)}" autocomplete="off">
+    <div id="liste">${liste ? '' : '<div class="admin-note">Chargement…</div>'}</div>`;
+  if (!liste) { try { liste = await api('lister'); } catch (e) { if (!erreurAcces(e)) $('liste').innerHTML = `<div class="warnline">Impossible de charger les missions : ${esc(e.message)}</div>`; return; } }
+  dessinerMissions();
+}
+function dessinerMissions() {
+  if (!$('liste')) return;
+  const n = s => liste.filter(v => v.statut === s).length;
+  const actives = liste.filter(v => !FINIS.includes(v.statut)).length;
+  const f = [['actives', `À traiter · ${actives}`], ...STATUTS.filter(s => n(s)).map(s => [s, `${s} · ${n(s)}`]), ['toutes', `Toutes · ${liste.length}`]];
+  $('filtres').innerHTML = f.map(([k, l]) => `<label class="chip"><input type="radio" name="filtre" data-filtre="${esc(k)}" ${filtre === k ? 'checked' : ''}><span>${esc(l)}</span></label>`).join('');
+  const q = recherche.toLowerCase();
+  const vis = liste.filter(v => (filtre === 'toutes' || (filtre === 'actives' ? !FINIS.includes(v.statut) : v.statut === filtre))
+    && (!q || [v.client, v.adresse, v.prestataire, nomTrame(v.trame)].join(' ').toLowerCase().includes(q)));
+  $('liste').innerHTML = vis.length ? vis.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Client sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(v.statut)}</span></span><span>${esc(nomTrame(v.trame))}${v.date_prevue ? ' · prévue le ' + dateFr(v.date_prevue) : v.date ? ' · ' + dateFr(v.date) : ''}${v.prestataire ? ' · ' + esc(v.prestataire) : ''}</span><span class="admin-note">${esc(v.adresse || '')}</span></button>`).join('')
+    : `<div class="vide"><b>${liste.length ? 'Aucune mission ne correspond' : 'Aucune mission pour l\'instant'}</b><span>${liste.length ? 'Change le filtre ou la recherche.' : 'Appuie sur « Nouvelle mission » pour en créer une.'}</span></div>`;
+}
+
+async function renderNouvelle() {
+  $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
+  let R; try { R = await chargerRef(); } catch (e) { if (!erreurAcces(e)) message('main', false, 'Chargement impossible', esc(e.message)); return; }
+  const clients = [['', '— Aucun (client particulier direct) —'], ...R.clients.map(c => [c.id, c.raison_sociale]), ['+', '＋ Nouveau client…']];
+  const prestas = [['moi', 'Moi (je fais la visite)'], ...R.prestataires.filter(p => p.actif !== 'non').map(p => [p.id, p.nom + (p.societe ? ' — ' + p.societe : '')]), ['', 'À attribuer plus tard'], ['+', '＋ Nouveau prestataire…']];
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">Nouvelle mission</strong><button class="linkbtn" data-nav="missions">Annuler</button></div>
+    <section class="sec"><h2><span>Type de visite</span></h2><div class="sec-body"><div class="chips">${TRAMES.map((t, i) => `<label class="chip"><input type="radio" name="nm_trame" value="${t.id}" ${i === 0 ? 'checked' : ''}><span>${esc(t.court)}</span></label>`).join('')}</div></div></section>
+    <section class="sec"><h2><span>Client (donneur d'ordre)</span></h2><div class="sec-body">
+      <div class="field"><label for="nm_client">Client professionnel</label><select class="inp" id="nm_client">${optionsHTML(clients, '')}</select></div>
+      <div id="nm_client_new" hidden class="sous">${champ('nc_rs', 'Raison sociale', '', { req: true })}${champ('nc_contact', 'Contact', '')}<div class="grid2">${champ('nc_tel', 'Téléphone', '', { type: 'tel' })}${champ('nc_email', 'E-mail', '', { type: 'email' })}</div></div>
+    </div></section>
+    <section class="sec"><h2><span>Chantier</span></h2><div class="sec-body">
+      <div class="field"><label for="nm_chantier">Chantier</label><select class="inp" id="nm_chantier"></select></div>
+      <div id="nm_chantier_new" class="sous">${champ('nh_adresse', 'Adresse du chantier', '', { req: true, ph: 'N°, rue, code postal, ville' })}<div class="grid2">${champ('nh_final', 'Client final (nom, prénom)', '')}${champ('nh_tel', 'Téléphone du client final', '', { type: 'tel' })}</div></div>
+    </div></section>
+    <section class="sec"><h2><span>Planification</span></h2><div class="sec-body">
+      ${champ('nm_date', 'Date prévue de la visite', '', { type: 'date' })}
+      <div class="field"><label for="nm_presta">Qui fait la visite ?</label><select class="inp" id="nm_presta">${optionsHTML(prestas, 'moi')}</select></div>
+      <div id="nm_presta_new" hidden class="sous">${champ('np_nom', 'Nom du prestataire', '', { req: true })}<div class="grid2">${champ('np_tel', 'Téléphone', '', { type: 'tel' })}${champ('np_email', 'E-mail', '', { type: 'email' })}</div></div>
+    </div></section>
+    <div id="nm_out"></div>
+    <button class="primary" data-act2="creerMission">Créer la mission</button>`;
+  const majChantiers = () => {
+    const cid = $('nm_client').value;
+    const ch = R.chantiers.filter(c => !cid || cid === '+' ? false : c.client_id === cid);
+    $('nm_chantier').innerHTML = optionsHTML([['+', '＋ Nouveau chantier…'], ...ch.map(c => [c.id, c.adresse + (c.client_final ? ' — ' + c.client_final : '')])], '+');
+    $('nm_chantier_new').hidden = false;
+  };
+  $('nm_client').onchange = () => { $('nm_client_new').hidden = $('nm_client').value !== '+'; majChantiers(); };
+  $('nm_chantier').onchange = () => { $('nm_chantier_new').hidden = $('nm_chantier').value !== '+'; };
+  $('nm_presta').onchange = () => { $('nm_presta_new').hidden = $('nm_presta').value !== '+'; };
+  majChantiers();
+}
+async function creerMission(btn) {
+  const trame = (document.querySelector('[name="nm_trame"]:checked') || {}).value;
+  let cid = valeur('nm_client'), hid = valeur('nm_chantier'), pid = $('nm_presta').value;
+  if (cid === '+' && !valeur('nc_rs')) return message('nm_out', false, 'Indique la raison sociale du nouveau client');
+  if (hid === '+' && !valeur('nh_adresse')) return message('nm_out', false, "Indique l'adresse du chantier");
+  if (pid === '+' && !valeur('np_nom')) return message('nm_out', false, 'Indique le nom du nouveau prestataire');
+  btn.disabled = true; message('nm_out', true, 'Création de la mission…');
+  try {
+    if (cid === '+') cid = (await api('sauverClient', { raison_sociale: valeur('nc_rs'), contact: valeur('nc_contact'), tel: valeur('nc_tel'), email: valeur('nc_email') })).id;
+    if (hid === '+') hid = (await api('sauverChantier', { client_id: cid, adresse: valeur('nh_adresse'), client_final: valeur('nh_final'), tel_client_final: valeur('nh_tel') })).id;
+    if (pid === '+') pid = (await api('sauverPrestataire', { nom: valeur('np_nom'), tel: valeur('np_tel'), email: valeur('np_email') })).id;
+    const R = await chargerRef(true);
+    const client = R.clients.find(c => c.id === cid), chantier = R.chantiers.find(c => c.id === hid);
+    const donnees = vierge(trame), v = donnees.values, date = valeur('nm_date');
+    if (date) v.date = date;
+    if (chantier) { v.adresse = chantier.adresse; if (chantier.client_final) v.client = chantier.client_final; if (chantier.tel_client_final) v.tel = chantier.tel_client_final; }
+    if (client) { v.donneur = client.raison_sociale; if (!v.client && trame === 'autre') v.client = client.raison_sociale; }
+    if (trame === 'autre') v.type_client = chantier && chantier.client_final ? 'Particulier' : client ? 'Professionnel' : '';
+    const r = await api('creer', { trame, donnees, mission: { client_id: cid, chantier_id: hid, prestataire_id: pid, date_prevue: date } });
+    liste = null; await ouvrirVisite(r.id);
+  } catch (e) { btn.disabled = false; message('nm_out', false, 'La mission n\'a pas pu être créée', esc(e.message)); }
+}
+
+async function renderClients() {
+  $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
+  let R; try { R = await chargerRef(); } catch (e) { if (!erreurAcces(e)) message('main', false, 'Chargement impossible', esc(e.message)); return; }
+  if (ficheClient) return renderFicheClient(R);
+  if (!liste) { try { liste = await api('lister'); } catch (e) { liste = []; } }
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">Clients</strong><button class="primary" data-fiche-client="+">＋ Nouveau client</button></div>
+    <div id="liste">${R.clients.length ? R.clients.map(c => { const nch = R.chantiers.filter(h => h.client_id === c.id).length, nm = liste.filter(v => v.client_id === c.id).length;
+      return `<button class="carte ligne" data-fiche-client="${esc(c.id)}"><span class="l1"><b>${esc(c.raison_sociale)}</b><span class="admin-note">${nm} mission${nm > 1 ? 's' : ''}</span></span><span>${esc([c.contact, c.tel, c.email].filter(Boolean).join(' · '))}</span><span class="admin-note">${nch} chantier${nch > 1 ? 's' : ''}</span></button>`; }).join('')
+      : '<div class="vide"><b>Aucun client</b><span>Les clients se créent ici ou directement depuis « Nouvelle mission ».</span></div>'}</div>`;
+}
+function renderFicheClient(R) {
+  const c = ficheClient === '+' ? {} : (R.clients.find(x => x.id === ficheClient) || {});
+  const chs = c.id ? R.chantiers.filter(h => h.client_id === c.id) : [];
+  const ms = c.id ? (liste || []).filter(v => v.client_id === c.id) : [];
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">${c.id ? esc(c.raison_sociale) : 'Nouveau client'}</strong><button class="linkbtn" data-fiche-client="">← Clients</button></div>
+    <section class="sec"><h2><span>Fiche client</span></h2><div class="sec-body">
+      ${champ('fc_rs', 'Raison sociale', c.raison_sociale, { req: true })}${champ('fc_contact', 'Contact', c.contact)}
+      <div class="grid2">${champ('fc_tel', 'Téléphone', c.tel, { type: 'tel' })}${champ('fc_email', 'E-mail', c.email, { type: 'email' })}</div>
+      ${champ('fc_adresse', 'Adresse', c.adresse)}${champ('fc_notes', 'Informations complémentaires', c.notes, { area: true })}
+      <div id="fc_out"></div><button class="primary" data-act2="sauverClient" data-id="${esc(c.id || '')}">Enregistrer</button></div></section>
+    ${c.id ? `<section class="sec"><h2><span>Lien de demande de visite</span></h2><div class="sec-body">
+      <span class="admin-note">Ce lien permet à ${esc(c.raison_sociale)} de te demander des visites et de suivre leur avancement. Il ne donne accès à rien d'autre : ni rapports, ni autres clients.</span>
+      <div class="btnrow"><button class="primary" data-act2="lienClientMail" data-id="${esc(c.id)}">Envoyer le lien par e-mail</button><button class="ghost" data-act2="lienClientCopie" data-id="${esc(c.id)}">Copier le lien</button><button class="linkbtn" data-act2="lienClientCouper" data-id="${esc(c.id)}">${pendingClear === 'couper' ? 'Confirmer : couper l\'ancien lien ?' : 'Couper le lien et en créer un nouveau'}</button></div>
+      <div id="lc_out"></div></div></section>
+    <section class="sec"><h2><span>Chantiers</span><span class="count">${chs.length}</span></h2><div class="sec-body">
+      ${chs.map(h => `<div class="facade"><div class="grid2">${champ('fh_a_' + h.id, 'Adresse', h.adresse)}${champ('fh_f_' + h.id, 'Client final', h.client_final)}</div>${champ('fh_t_' + h.id, 'Téléphone du client final', h.tel_client_final, { type: 'tel' })}<div><button class="ghost" data-act2="sauverChantier" data-id="${esc(h.id)}">Enregistrer ce chantier</button></div></div>`).join('')}
+      <div class="facade"><b>Ajouter un chantier</b><div class="grid2">${champ('fh_a_new', 'Adresse', '')}${champ('fh_f_new', 'Client final', '')}</div>${champ('fh_t_new', 'Téléphone du client final', '', { type: 'tel' })}<div><button class="ghost" data-act2="sauverChantier" data-id="">＋ Ajouter</button></div></div>
+      <div id="fh_out"></div></div></section>
+    <section class="sec"><h2><span>Missions</span><span class="count">${ms.length}</span></h2><div class="sec-body">${ms.length ? ms.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(v.statut)}</span></span><span>${esc(nomTrame(v.trame))} · ${esc(v.adresse || '')}</span></button>`).join('') : '<span class="admin-note">Aucune mission pour ce client.</span>'}</div></section>` : ''}`;
+}
+async function sauverClient(btn) {
+  if (!valeur('fc_rs')) return message('fc_out', false, 'La raison sociale est obligatoire');
+  btn.disabled = true;
+  try {
+    const r = await api('sauverClient', { id: btn.dataset.id || undefined, raison_sociale: valeur('fc_rs'), contact: valeur('fc_contact'), tel: valeur('fc_tel'), email: valeur('fc_email'), adresse: valeur('fc_adresse'), notes: valeur('fc_notes') });
+    ficheClient = r.id; await chargerRef(true); renderClients(); setTimeout(() => message('fc_out', true, 'Client enregistré'), 50);
+  } catch (e) { btn.disabled = false; message('fc_out', false, 'Enregistrement impossible', esc(e.message)); }
+}
+async function lienClient(btn, quoi) {
+  const id = btn.dataset.id;
+  try {
+    if (quoi === 'mail') { btn.disabled = true; message('lc_out', true, 'Envoi…'); const r = await api('envoyerLienClient', { id }); btn.disabled = false; return message('lc_out', true, 'Lien envoyé', 'E-mail envoyé à ' + esc(r.email) + '.'); }
+    if (quoi === 'couper') {
+      if (pendingClear !== 'couper') { pendingClear = 'couper'; btn.textContent = 'Confirmer : couper l\'ancien lien ?'; return; }
+      pendingClear = null; const r = await api('couperLienClient', { id }); btn.textContent = 'Couper le lien et en créer un nouveau';
+      return copier(r.url, 'lc_out');
+    }
+    message('lc_out', true, 'Préparation du lien…'); copier((await api('lienClient', { id })).url, 'lc_out');
+  } catch (e) { btn.disabled = false; message('lc_out', false, 'Action impossible', esc(e.message)); }
+}
+async function sauverChantier(btn) {
+  const k = btn.dataset.id || 'new';
+  if (!valeur('fh_a_' + k)) return message('fh_out', false, "L'adresse du chantier est obligatoire");
+  btn.disabled = true;
+  try {
+    await api('sauverChantier', { id: btn.dataset.id || undefined, client_id: ficheClient, adresse: valeur('fh_a_' + k), client_final: valeur('fh_f_' + k), tel_client_final: valeur('fh_t_' + k) });
+    await chargerRef(true); renderClients(); setTimeout(() => message('fh_out', true, 'Chantier enregistré'), 50);
+  } catch (e) { btn.disabled = false; message('fh_out', false, 'Enregistrement impossible', esc(e.message)); }
+}
+
+async function renderPrestataires() {
+  $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
+  let R; try { R = await chargerRef(); } catch (e) { if (!erreurAcces(e)) message('main', false, 'Chargement impossible', esc(e.message)); return; }
+  if (!liste) { try { liste = await api('lister'); } catch (e) { liste = []; } }
+  if (fichePresta) {
+    const p = fichePresta === '+' ? { actif: 'oui' } : (R.prestataires.find(x => x.id === fichePresta) || {});
+    $('main').innerHTML = `<div class="intro-row"><strong class="h1">${p.id ? esc(p.nom) : 'Nouveau prestataire'}</strong><button class="linkbtn" data-fiche-presta="">← Prestataires</button></div>
+      <section class="sec"><h2><span>Fiche prestataire</span></h2><div class="sec-body">
+        ${champ('fp_nom', 'Nom', p.nom, { req: true })}${champ('fp_soc', 'Société', p.societe)}
+        <div class="grid2">${champ('fp_tel', 'Téléphone', p.tel, { type: 'tel' })}${champ('fp_email', 'E-mail (pour recevoir les liens)', p.email, { type: 'email' })}</div>
+        <div class="field"><span class="lbl">Statut</span><div class="chips"><label class="chip"><input type="radio" name="fp_actif" value="oui" ${p.actif !== 'non' ? 'checked' : ''}><span>Actif</span></label><label class="chip"><input type="radio" name="fp_actif" value="non" ${p.actif === 'non' ? 'checked' : ''}><span>Inactif (ne plus proposer)</span></label></div></div>
+        <div id="fp_out"></div><button class="primary" data-act2="sauverPresta" data-id="${esc(p.id || '')}">Enregistrer</button></div></section>`;
+    return;
+  }
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">Prestataires</strong><button class="primary" data-fiche-presta="+">＋ Nouveau prestataire</button></div>
+    <div id="liste">${R.prestataires.length ? R.prestataires.map(p => { const enc = liste.filter(v => v.prestataire_id === p.id && !FINIS.includes(v.statut)).length;
+      return `<button class="carte ligne" data-fiche-presta="${esc(p.id)}"><span class="l1"><b>${esc(p.nom)}</b><span class="st ${p.actif === 'non' ? '' : 'st-ok'}">${p.actif === 'non' ? 'Inactif' : 'Actif'}</span></span><span>${esc([p.societe, p.tel, p.email].filter(Boolean).join(' · '))}</span><span class="admin-note">${enc} mission${enc > 1 ? 's' : ''} en cours</span></button>`; }).join('')
+      : '<div class="vide"><b>Aucun prestataire</b><span>Ajoute tes prestataires pour pouvoir leur envoyer un lien de mission.</span></div>'}</div>`;
+}
+async function sauverPresta(btn) {
+  if (!valeur('fp_nom')) return message('fp_out', false, 'Le nom est obligatoire');
+  btn.disabled = true;
+  try {
+    const r = await api('sauverPrestataire', { id: btn.dataset.id || undefined, nom: valeur('fp_nom'), societe: valeur('fp_soc'), tel: valeur('fp_tel'), email: valeur('fp_email'), actif: (document.querySelector('[name="fp_actif"]:checked') || {}).value || 'oui' });
+    fichePresta = r.id; await chargerRef(true); await renderPrestataires(); message('fp_out', true, 'Prestataire enregistré');
+  } catch (e) { btn.disabled = false; message('fp_out', false, 'Enregistrement impossible', esc(e.message)); }
+}
+
+/* ---------- Mission : panneau en tête de la saisie ---------- */
+function missionPanel() {
+  if (PRESTA) {
+    const m = V.mission || {};
+    const dv = S().values;
+    return `<div class="panel mission"><h3>Mission GESTRAC</h3><span>${esc(T().court)}${m.date_prevue ? ' · prévue le ' + dateFr(m.date_prevue) : ''}</span>
+      <div class="aide"><b>Client à appeler pour planifier</b><br>${esc(dv.client || m.client_final || '—')}${(dv.tel || m.tel_client) ? ` · <a href="tel:${esc(String(dv.tel || m.tel_client).split(' ').join(''))}">${esc(dv.tel || m.tel_client)}</a>` : ''}<br>${esc(dv.adresse || m.chantier || '')}</div>
+      ${dv.demande_entreprise ? `<div class="aide">Présente-toi chez le client <b>au nom de : ${esc(dv.demande_entreprise)}</b></div>` : ''}
+      <div class="field"><label for="pl_date">Date de la visite convenue avec le client</label><div class="btnrow"><input class="inp" id="pl_date" type="date" value="${esc(m.date_prevue || '')}" style="flex:1;min-width:160px"><button class="ghost" data-act="planifier">Enregistrer la date</button></div></div>
+      <div id="plOut"></div>
+      ${dv.demande_commentaire ? `<div class="aide"><b>Consignes</b><br>${nl(dv.demande_commentaire)}</div>` : ''}
+      ${V.statut === 'Complément demandé' ? '<div class="warnline">GESTRAC t\'a demandé un complément : regarde l\'e-mail reçu, complète la visite, puis envoie-la à nouveau.</div>' : ''}
+      <span class="admin-note">Remplis la trame sur place. Tout est enregistré au fur et à mesure. À la fin, appuie sur « Envoyer la visite à GESTRAC ».</span></div>`;
+  }
+  const m = V.mission || {}, R = REFD;
+  if (!R) { chargerRef().then(() => { if (vue === 'visite' && mode === 'saisie' && $('missionBox')) $('missionBox').outerHTML = missionPanel(); }).catch(() => {}); }
+  const prestas = [['moi', 'Moi (je fais la visite)'], ['', 'À attribuer plus tard'], ...((R && R.prestataires) || []).filter(p => p.actif !== 'non' || p.id === m.prestataire_id).map(p => [p.id, p.nom])];
+  const sel = m.prestataire_id || (V.statut === 'À attribuer' ? '' : 'moi');
+  const avecPresta = !!m.prestataire_id;
+  if (avecPresta && !V.lien) call('lienMission', { id: V.id }).then(r => { V.lien = r.url; }).catch(() => {});
+  return `<div class="panel mission" id="missionBox"><div class="l1"><h3>Mission</h3><span class="st ${stCls(V.statut)}">${esc(V.statut)}</span></div>
+    ${m.client ? `<span>Client : <b>${esc(m.client)}</b></span>` : ''}
+    ${S().values.demande_entreprise || S().values.demande_date || S().values.demande_commentaire ? `<div class="aide"><b>Demande reçue du client pro</b>${S().values.demande_entreprise ? `<br>Se présenter au nom de : <b>${esc(S().values.demande_entreprise)}</b>` : ''}${S().values.demande_date ? `<br>Date souhaitée : ${dateFr(S().values.demande_date)}` : ''}${S().values.demande_commentaire ? `<br>${nl(S().values.demande_commentaire)}` : ''}</div>` : ''}
+    <div class="grid2"><div class="field"><label for="ms_presta">Prestataire</label><select class="inp" id="ms_presta" data-mission="prestataire_id">${optionsHTML(prestas, sel)}</select></div>
+      <div class="field"><label for="ms_date">Date prévue</label><input class="inp" id="ms_date" type="date" data-mission="date_prevue" value="${esc(m.date_prevue || '')}"></div></div>
+    ${avecPresta ? `<div class="btnrow"><button class="primary" data-act="envoyerLien">${V.statut === 'Envoyée' ? 'Renvoyer le lien par e-mail' : 'Envoyer le lien par e-mail'}</button><button class="ghost" data-act="copierLien">Copier le lien</button></div>` : ''}
+    ${V.statut === 'Soumise' || FINIS.includes(V.statut) ? `<details><summary class="linkbtn">Demander un complément au prestataire</summary><div class="field"><textarea class="inp" id="ms_compl" placeholder="Ex. : il manque 2 photos de la façade arrière et la hauteur du pignon."></textarea><div><button class="ghost" data-act="complement">Envoyer la demande</button></div></div></details>` : ''}
+    <div id="missionOut"></div></div>`;
+}
+async function majMission(el) {
+  const k = el.dataset.mission, val = el.value;
+  try {
+    await api('majMission', { id: V.id, [k]: val });
+    V.mission[k] = val === 'moi' ? '' : val;
+    if (k === 'prestataire_id') { V.lien = null; V.statut = val === 'moi' ? (VERROU.includes(V.statut) ? V.statut : 'En cours') : val ? (VERROU.includes(V.statut) ? V.statut : 'À envoyer') : 'À attribuer'; }
+    liste = null; renderSaisie(); message('missionOut', true, 'Mission mise à jour');
+  } catch (e) { message('missionOut', false, 'Modification impossible', esc(e.message)); }
+}
+
+/* ---------- Signatures au doigt ---------- */
+const MENTIONS = {
+  presta: "En signant, je confirme avoir réalisé cette visite sur place et que les informations, mesures et photos transmises correspondent à ce que j'ai constaté.",
+  client: "Le client atteste avoir reçu ce jour la visite d'un technicien pour une visite technique." };
+function signaturesHTML() {
+  const bloc = (qui, titre, req) => {
+    const p = P('sig-' + qui)[0], nomK = 'sig_' + qui + '_nom';
+    return `<div class="facade"><b>${titre}${req ? '<span class="req">*</span>' : ' <span class="admin-note">(facultatif)</span>'}</b>
+      <span class="hint">${esc(MENTIONS[qui])}</span>
+      ${fieldHTML({ id: nomK, label: qui === 'presta' ? 'Nom du prestataire' : 'Nom du client', type: 'text', req }, S().values)}
+      ${p ? `<div class="sig-ok"><img ${p.fileId ? `data-fid="${p.fileId}"` : ''} src="${p.src || ''}" alt="Signature"><span class="admin-note">${p._up ? 'Envoi…' : 'Signé le ' + esc(p.signe_le || '')}</span><div><button class="linkbtn" data-act="sig-refaire" data-qui="${qui}">Refaire la signature</button></div></div>`
+        : `<canvas class="sig" id="sig-${qui}" aria-label="Zone de signature"></canvas><div class="btnrow"><button class="primary" data-act="sig-valider" data-qui="${qui}">Valider la signature</button><button class="ghost" data-act="sig-effacer" data-qui="${qui}">Effacer</button></div>`}
+    </div>`;
+  };
+  return `<section class="sec"><h2><span>Signatures</span></h2><div class="sec-body"><span class="admin-note">Signe avec le doigt dans le cadre.</span>${bloc('presta', 'Signature du prestataire', true)}${bloc('client', 'Signature du client', false)}</div></section>`;
+}
+function initSignatures() {
+  document.querySelectorAll('canvas.sig').forEach(cv => {
+    const r = cv.getBoundingClientRect(), k = window.devicePixelRatio || 1;
+    cv.width = Math.round(r.width * k); cv.height = Math.round(r.height * k);
+    const g = cv.getContext('2d'); g.scale(k, k); g.lineWidth = 2.4; g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = '#0B1F3A';
+    cv.dataset.vide = '1';
+    let enTrait = false, last = null;
+    const pt = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+    cv.addEventListener('pointerdown', e => { enTrait = true; last = pt(e); cv.setPointerCapture(e.pointerId); e.preventDefault(); });
+    cv.addEventListener('pointermove', e => { if (!enTrait) return; const q = pt(e); g.beginPath(); g.moveTo(...last); g.lineTo(...q); g.stroke(); last = q; cv.dataset.vide = '0'; e.preventDefault(); });
+    const fin = () => { enTrait = false; };
+    cv.addEventListener('pointerup', fin); cv.addEventListener('pointercancel', fin);
+  });
+}
+function sigEffacer(qui) { const cv = $('sig-' + qui); if (!cv) return; cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); cv.dataset.vide = '1'; }
+async function sigValider(qui, btn) {
+  const cv = $('sig-' + qui); if (!cv) return;
+  if (cv.dataset.vide === '1') return alertePanel('Signe d\'abord dans le cadre avec le doigt.');
+  // fond blanc + JPEG : même format que les photos
+  const out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height;
+  const g = out.getContext('2d'); g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, out.width, out.height); g.drawImage(cv, 0, 0);
+  const src = out.toDataURL('image/jpeg', 0.9), d = new Date();
+  const p = { src, w: out.width, h: out.height, kb: Math.round(src.length * 0.75 / 1024), cap: qui === 'presta' ? 'Signature du prestataire' : 'Signature du client',
+    signe_le: `${dateFr(today())} à ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`, _up: true };
+  btn.disabled = true;
+  P('sig-' + qui).splice(0, 9, p); renderSaisie();
+  try { const r = await call('envoyerPhoto', { id: V.id, data: src, nom: p.cap }); p.fileId = r.fileId; delete p._up; cachePhotos.set(r.fileId, src); save(); }
+  catch (e) { P('sig-' + qui).splice(0); alertePanel('La signature n\'a pas pu être envoyée (réseau ?). Refais-la. Détail : ' + e.message); }
+  renderSaisie();
+}
+function validationHTML(num, v) {
+  const sp = P('sig-presta').filter(p => !PDF || p.fileId)[0], sc = P('sig-client').filter(p => !PDF || p.fileId)[0];
+  const img = p => { if (!PDF) return `<img ${p.fileId ? `data-fid="${p.fileId}"` : ''} src="${p.src || ''}" alt="" style="max-height:90px;max-width:100%">`;
+    let w = 220, h = 90; if (p.w && p.h) { const k = Math.min(220 / p.w, 90 / p.h); w = Math.round(p.w * k); h = Math.round(p.h * k); } return `<img src="vt-photo:${p.fileId}" width="${w}" height="${h}" alt="">`; };
+  const cell = (p, titre, nom, mention) => `<td><b>${titre}</b>${nom ? ' : ' + esc(nom) : ''}<br>${img(p)}<br><span class="r-note">${esc(mention)}<br>Signé le ${esc(p.signe_le || '')}</span></td>`;
+  const tete = `<div class="r-sec"><div class="hb">${ROM[num]}. Validation</div><table class="r-tab"><tbody><tr><td>Contrôleur</td><td>${esc(ENTREPRISE.nom)} — ${esc(ENTREPRISE.controleur)}</td></tr><tr><td>Date</td><td>${dateFr(v.date)}</td></tr></tbody></table>`;
+  if (!sp && !sc) return tete + (PDF ? '' : '<table class="r-sign"><tr><td>Signature du prestataire :</td><td>Signature du client :</td></tr></table>') + '</div>';
+  return tete + `<table class="r-sign r-sign-ok"><tr>${sp ? cell(sp, 'Le prestataire', v.sig_presta_nom, MENTIONS.presta) : '<td></td>'}${sc ? cell(sc, 'Le client', v.sig_client_nom, MENTIONS.client) : '<td></td>'}</tr></table></div>`;
+}
+
+/* ---------- Ouverture d'une visite ---------- */
+async function ouvrirVisite(id) {
+  $('main').innerHTML = '<div class="admin-note">Ouverture…</div>';
+  try {
+    const v = await call('ouvrir', { id });
+    const d = v.donnees || {};
+    d.values ||= {}; d.facades ||= []; d.surfaces ||= []; d.photos ||= {};
+    V = { id: v.id, trame: v.trame, statut: v.statut, donnees: d, mission: v.mission || {} };
+    if (!d.values.sig_presta_nom) d.values.sig_presta_nom = PRESTA ? (V.mission.prestataire || '') : (V.mission.prestataire_id ? (V.mission.prestataire || '') : ENTREPRISE.controleur);
+    vue = 'visite'; mode = 'saisie'; setEtat('ok'); render(); window.scrollTo(0, 0);
+  } catch (e) {
+    if (PRESTA) { $('main').innerHTML = `<div class="vide"><b>Lien de mission indisponible</b><span>${esc(e.message)}</span></div>`; return; }
+    message('main', false, 'Impossible d\'ouvrir la visite', esc(e.message));
+  }
+}
+function renderVerrouille() {
+  $('main').innerHTML = `<div class="vide merci"><b>Visite transmise à GESTRAC</b><span>Merci ! La visite « ${esc(T().court)} » ${S().values.client ? 'chez ' + esc(S().values.client) + ' ' : ''}a bien été envoyée. Elle ne peut plus être modifiée.</span><span>Si GESTRAC a besoin d'un complément, tu recevras un e-mail avec un lien.</span></div>`;
+}
+
+/* ---------- Rapport : aperçu + PDF ---------- */
+function renderRapport() {
+  const val = validate(), miss = val.out;
+  PDF = false;
+  const corps = rapportHTML();
+  $('main').innerHTML = `
+    <div class="intro"><strong>Aperçu du rapport</strong><span>Vérifie le rapport, puis génère le PDF : il est enregistré dans ton Drive, dans le dossier du client.</span></div>
+    ${miss.length ? `<div class="panel ko"><h3>${miss.length} point${miss.length > 1 ? 's' : ''} à vérifier</h3><ul>${miss.slice(0, 8).map(m => `<li>${esc(m[1])}</li>`).join('')}${miss.length > 8 ? `<li>et ${miss.length - 8} autre(s)…</li>` : ''}</ul><span class="admin-note">Tu peux générer le PDF malgré tout (visite faite par toi, information non disponible…).</span></div>` : ''}
+    <div class="btnrow"><button class="primary" data-act="pdf">Générer le PDF dans le Drive</button>${V.statut === 'Rapport généré' ? '<button class="ghost" data-act="envoye">Marquer le rapport comme envoyé au client</button>' : V.statut === 'Rapport envoyé' ? '<span class="st st-ok">Rapport envoyé au client</span>' : ''}</div>
+    <div id="pdfOut"></div>
+    <div class="sheet-wrap"><article class="sheet" aria-label="Rapport">${corps}</article></div>`;
+  chargerPhotos();
+}
+async function genererPdf() {
+  const out = $('pdfOut'), t = T(), v = S().values;
+  if (Object.values(S().photos || {}).some(l => l.some(p => p._up))) { out.innerHTML = '<div class="warnline">Des photos sont encore en cours d\'envoi : attends quelques secondes et réessaie.</div>'; return; }
+  out.innerHTML = '<div class="panel okp"><h3>Génération du PDF en cours…</h3><span>Cela peut prendre jusqu\'à une minute avec beaucoup de photos. Ne ferme pas la page.</span></div>';
+  try {
+    await flush();
+    PDF = true;
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${PDF_CSS}</style></head><body>${rapportHTML()}</body></html>`;
+    PDF = false;
+    const nom = `${v.client || 'Client'} - ${t.court} - GESTRAC`;
+    const r = await api('genererPdf', { id: V.id, html, nomFichier: nom, classement: { client: (V.mission && V.mission.client) || v.donneur || v.client, chantier: v.adresse, type: t.court, date: dateFr(v.date).split('/').join('-') } });
+    V.statut = 'Rapport généré'; liste = null;
+    out.innerHTML = `<div class="panel okp"><h3>PDF enregistré dans ton Drive</h3><div class="btnrow"><a class="primary" href="${esc(r.url)}" target="_blank" rel="noopener">Ouvrir le PDF</a><a class="ghost" href="${esc(r.dossier)}" target="_blank" rel="noopener">Ouvrir le dossier</a></div><span class="admin-note">Les anciennes versions du PDF sont gardées dans le même dossier. Quand tu as envoyé le PDF à ton client, appuie sur « Marquer le rapport comme envoyé » : son suivi sera mis à jour.</span><div><button class="ghost" data-act="envoye">Marquer le rapport comme envoyé au client</button></div></div>`;
+  } catch (e) { PDF = false; out.innerHTML = `<div class="panel ko"><h3>Le PDF n'a pas pu être généré</h3><span>${esc(e.message)}</span></div>`; }
+}
+
+/* ---------- Portail client pro (lien ?c=…) ---------- */
+let portail = null;
+async function renderPortail(okMsg) {
+  if (!portail) {
+    $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
+    try { portail = await apiC('infos'); } catch (e) { $('main').innerHTML = `<div class="vide"><b>Lien indisponible</b><span>${esc(e.message)}</span></div>`; return; }
+  }
+  const types = TRAMES.map((t, i) => `<label class="chip"><input type="radio" name="dc_trame" value="${t.id}" ${i === 0 ? 'checked' : ''}><span>${esc(t.court)}</span></label>`).join('');
+  $('main').innerHTML = `<div class="intro"><strong class="h1">Demande de visite technique</strong><span>${esc(portail.raison_sociale)} · renseignez votre client, GESTRAC organise la visite.</span></div>
+    ${okMsg ? `<div class="panel okp"><h3>Demande envoyée</h3><span>${esc(okMsg)}</span></div>` : ''}
+    <section class="sec"><h2><span>Nouvelle demande</span></h2><div class="sec-body">
+      <div class="grid2">${champ('dc_nom', 'Nom et prénom du client', '', { req: true })}${champ('dc_tel', 'Téléphone du client', '', { type: 'tel' })}</div>
+      ${champ('dc_adresse', 'Adresse du chantier', '', { req: true, ph: 'N°, rue, code postal, ville' })}
+      ${champ('dc_entreprise', "Entreprise qui réalise les travaux (au nom de laquelle le technicien se présente chez le client)", '')}
+      <div class="field"><span class="lbl">Type de visite<span class="req">*</span></span><div class="chips">${types}</div></div>
+      <div class="field"><label for="dc_comm">Commentaire<span class="req">*</span></label><textarea class="inp" id="dc_comm" placeholder="Précisez le type de visite (ex. : ITE avant travaux, façade arrière uniquement…) et toute remarque utile sur le client (accès, horaires, digicode…)."></textarea></div>
+      <div id="dc_out"></div><button class="primary" data-act2="demander">Envoyer la demande</button>
+    </div></section>
+    <section class="sec"><h2><span>Mes demandes</span><span class="count">${portail.demandes.length}</span></h2><div class="sec-body">
+      ${portail.demandes.length ? portail.demandes.map(d => `<div class="carte ligne"><span class="l1"><b>${esc(d.client || '—')}</b><span class="st ${d.etat === 'Rapport envoyé' ? 'st-ok' : d.etat === 'Visite réalisée' ? 'st-new' : d.etat === 'Annulée' ? 'st-ko' : ''}">${esc(d.etat)}</span></span><span>${esc(nomTrame(d.trame))}${d.etat === 'Planifiée' && d.date_prevue ? ' · prévue le ' + dateFr(d.date_prevue) : ''}</span><span class="admin-note">${esc(d.adresse)}</span></div>`).join('')
+        : '<span class="admin-note">Vos demandes apparaîtront ici avec leur avancement : reçue, planifiée, visite réalisée, rapport envoyé.</span>'}
+    </div></section>`;
+}
+async function envoyerDemande(btn) {
+  const d = { nom: valeur('dc_nom'), tel: valeur('dc_tel'), adresse: valeur('dc_adresse'), entreprise: valeur('dc_entreprise'), commentaire: valeur('dc_comm'), trame: (document.querySelector('[name="dc_trame"]:checked') || {}).value };
+  if (!d.nom || !d.adresse || !d.commentaire) return message('dc_out', false, "Le nom du client, l'adresse et le commentaire sont obligatoires");
+  btn.disabled = true; message('dc_out', true, 'Envoi de la demande…');
+  try { await apiC('demander', d); portail = null; await renderPortail(`La visite pour ${d.nom} a bien été transmise à GESTRAC. Vous pouvez suivre son avancement ci-dessous.`); window.scrollTo(0, 0); }
+  catch (e) { btn.disabled = false; message('dc_out', false, "La demande n'a pas pu être envoyée", esc(e.message)); }
+}
+
+/* ---------- Navigation ---------- */
+const ONGLETS = [['missions', 'Missions'], ['clients', 'Clients'], ['prestataires', 'Prestataires']];
+function renderNav() {
+  const enVisite = vue === 'visite', vb = $('visitbar'), og = $('onglets');
+  vb.hidden = !enVisite;
+  if (enVisite) vb.innerHTML = PRESTA ? `<b class="vt-nom">${esc(T().court)}</b>` : `<button class="ghost" data-nav="missions">← Missions</button><b class="vt-nom">${esc(T().court)}</b>`;
+  og.hidden = PRESTA || CLIENT || enVisite || vue === 'connexion';
+  if (!og.hidden) og.innerHTML = ONGLETS.map(([k, l]) => `<button data-nav="${k}" aria-pressed="${vue === k || (vue === 'nouvelle' && k === 'missions')}">${l}</button>`).join('');
+  $('modes').hidden = !enVisite || PRESTA;
+  $('etat').hidden = !enVisite;
+  $('mSaisie').setAttribute('aria-pressed', mode === 'saisie');
+  $('mRapport').setAttribute('aria-pressed', mode === 'rapport');
+  const verrou = PRESTA && V && VERROU.includes(V.statut);
+  $('actionbar').hidden = !(enVisite && mode === 'saisie') || verrou;
+  $('btnSend').textContent = PRESTA ? 'Envoyer la visite à GESTRAC' : 'Vérifier la visite';
+}
+function render() {
+  renderNav();
+  if (vue === 'portail') return renderPortail();
+  if (vue === 'connexion') return renderConnexion();
+  if (vue === 'missions') return renderMissions();
+  if (vue === 'nouvelle') return renderNouvelle();
+  if (vue === 'clients') return renderClients();
+  if (vue === 'prestataires') return renderPrestataires();
+  if (!V) return;
+  if (PRESTA && VERROU.includes(V.statut)) return renderVerrouille();
+  mode === 'saisie' ? renderSaisie() : renderRapport();
+}
+$('mSaisie').onclick = () => { mode = 'saisie'; render(); };
+$('mRapport').onclick = () => { mode = 'rapport'; render(); window.scrollTo(0, 0); };
+$('logoTop').src = LOGO;
+document.body.addEventListener('click', async e => {
+  const b = e.target.closest('[data-nav],[data-open],[data-fiche-client],[data-fiche-presta],[data-act2]'); if (!b) return;
+  if (b.dataset.act2) { const f = { creerMission, sauverClient, sauverChantier, sauverPresta, lienClientMail: x => lienClient(x, 'mail'), lienClientCopie: x => lienClient(x, 'copie'), lienClientCouper: x => lienClient(x, 'couper'), demander: envoyerDemande }[b.dataset.act2]; return f && f(b); }
+  if (b.dataset.open) { await flush(); return ouvrirVisite(b.dataset.open); }
+  if (b.dataset.ficheClient !== undefined) { ficheClient = b.dataset.ficheClient || null; vue = 'clients'; render(); return window.scrollTo(0, 0); }
+  if (b.dataset.fichePresta !== undefined) { fichePresta = b.dataset.fichePresta || null; vue = 'prestataires'; render(); return window.scrollTo(0, 0); }
+  const n = b.dataset.nav;
+  if (vue === 'visite') await flush();
+  if (n === 'clients') ficheClient = null;
+  if (n === 'prestataires') fichePresta = null;
+  if (n === 'missions' && vue === 'visite') { V = null; liste = null; }
+  vue = n; render(); window.scrollTo(0, 0);
+});
+document.body.addEventListener('input', e => { if (e.target.id === 'recherche') { recherche = e.target.value; dessinerMissions(); } });
+document.body.addEventListener('change', e => {
+  if (e.target.dataset.filtre) { filtre = e.target.dataset.filtre; dessinerMissions(); }
+  if (e.target.dataset.mission && vue === 'visite' && !PRESTA) majMission(e.target);
+});
+
+const main = $('main');
+const findF = id => S().facades.find(f => f.id === id);
+function onField(e) {
+  if (vue !== 'visite' || !V) return;
+  const el = e.target, st = S();
+  if (el.dataset.k) { st.values[el.dataset.k] = el.value; }
+  else if (el.dataset.ok) { const o = findF(el.dataset.f).ouvertures.find(x => x.id === el.dataset.o); o[el.dataset.ok] = el.value; }
+  else if (el.dataset.sk) { st.surfaces.find(x => x.id === el.dataset.s)[el.dataset.sk] = el.value; }
+  else if (el.dataset.fk) {
+    const f = findF(el.dataset.f); f[el.dataset.fk] = el.value;
+    if (el.dataset.fk === 'statut' || el.dataset.fk === 'forme') { save(); renderSaisie(); return; }
+  } else return;
+  save(); refresh();
+}
+main.addEventListener('input', onField);
+main.addEventListener('change', e => { if (e.target.type === 'file') return addPhotos(e.target); if ((e.target.type === 'radio' || e.target.tagName === 'SELECT') && !e.target.dataset.mission && !e.target.dataset.filtre) onField(e); });
+main.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b || vue !== 'visite') return;
+  const st = S(), a = b.dataset.act;
+  if (a === 'pdf') return genererPdf();
+  if (a === 'envoye') { b.disabled = true; try { await api('marquerEnvoye', { id: V.id }); V.statut = 'Rapport envoyé'; liste = null; renderRapport(); } catch (er) { b.disabled = false; message('pdfOut', false, 'Action impossible', esc(er.message)); } return; }
+  if (a === 'planifier') {
+    const d = valeur('pl_date'); if (!d) return message('plOut', false, 'Choisis la date convenue avec le client');
+    b.disabled = true;
+    try { await call('planifier', { date: d }); V.mission.date_prevue = d; renderSaisie(); message('plOut', true, 'Date enregistrée', 'Visite prévue le ' + dateFr(d) + '. GESTRAC la voit dans son tableau de bord.'); }
+    catch (er) { b.disabled = false; message('plOut', false, 'Date non enregistrée', esc(er.message)); }
+    return;
+  }
+  if (a === 'sig-effacer') return sigEffacer(b.dataset.qui);
+  if (a === 'sig-valider') return sigValider(b.dataset.qui, b);
+  if (a === 'sig-refaire') { const [p] = P('sig-' + b.dataset.qui).splice(0); if (p && p.fileId) call('supprimerPhoto', { fileId: p.fileId }).catch(() => {}); save(); return renderSaisie(); }
+  if (a === 'copy') return copyData();
+  if (a === 'copierLien') { if (V.lien) return copier(V.lien, 'missionOut'); message('missionOut', true, 'Préparation du lien…'); try { V.lien = (await call('lienMission', { id: V.id })).url; copier(V.lien, 'missionOut'); } catch (er) { message('missionOut', false, 'Lien indisponible', esc(er.message)); } return; }
+  if (a === 'envoyerLien') {
+    b.disabled = true; message('missionOut', true, 'Envoi de l\'e-mail…');
+    try { await flush(); const r = await api('envoyerLien', { id: V.id, typeVisite: T().court }); if (!VERROU.includes(V.statut)) V.statut = 'Envoyée'; liste = null; renderSaisie(); message('missionOut', true, 'Lien envoyé', 'E-mail envoyé à ' + esc(r.email) + '.'); }
+    catch (er) { b.disabled = false; message('missionOut', false, 'E-mail non envoyé', esc(er.message)); }
+    return;
+  }
+  if (a === 'complement') {
+    const msg = valeur('ms_compl'); if (!msg) return message('missionOut', false, 'Écris ce qu\'il manque');
+    b.disabled = true;
+    try { const r = await api('demanderComplement', { id: V.id, message: msg }); V.statut = 'Complément demandé'; liste = null; renderSaisie(); message('missionOut', true, 'Demande envoyée', r.email ? 'E-mail envoyé à ' + esc(r.email) + '. La visite est de nouveau modifiable par le prestataire.' : 'Le prestataire n\'a pas d\'e-mail : copie le lien et envoie-lui ton message.'); }
+    catch (er) { b.disabled = false; message('missionOut', false, 'Demande non envoyée', esc(er.message)); }
+    return;
+  }
+  if (a === 'soumettre') {
+    b.disabled = true;
+    try { await flush(); await call('soumettre', { donnees: propre(V.donnees) }); V.statut = 'Soumise'; render(); window.scrollTo(0, 0); }
+    catch (er) { b.disabled = false; alertePanel(er.message); }
+    return;
+  }
+  if (a === 'suppr') {
+    if (pendingClear !== 'suppr') { pendingClear = 'suppr'; renderSaisie(); return; }
+    pendingClear = null; await flush();
+    try { await api('supprimer', { id: V.id }); V = null; vue = 'missions'; liste = null; render(); } catch (er) { alertePanel(er.message); }
+    return;
+  }
+  if (a === 'add-fac') st.facades.push(fac(`Façade ${st.facades.length + 1}`, 'inclus', null, null));
+  else if (a === 'del-fac') st.facades = st.facades.filter(f => f.id !== b.dataset.f);
+  else if (a === 'add-ouv') findF(b.dataset.f).ouvertures.push({ id: uid(), type: 'F', qte: '1', l: '', h: '' });
+  else if (a === 'del-ouv') { const f = findF(b.dataset.f); f.ouvertures = f.ouvertures.filter(o => o.id !== b.dataset.o); }
+  else if (a === 'add-surf') st.surfaces.push(surf('', null, null));
+  else if (a === 'del-surf') st.surfaces = st.surfaces.filter(x => x.id !== b.dataset.s);
+  else if (a === 'del-photo') {
+    const [p] = P(b.dataset.slot).splice(+b.dataset.i, 1);
+    if (p && p.fileId) call('supprimerPhoto', { fileId: p.fileId }).catch(() => {});
+  } else return;
+  pendingClear = null;
+  save(); renderSaisie();
+});
+function alertePanel(msg) { const el = $('checkPanel'); if (el) el.innerHTML = `<div class="panel ko"><h3>Action impossible</h3><span>${esc(msg)}</span></div>`; }
+
+/* Photos : compression dans le téléphone (1600 px max, JPEG ~72 %), puis envoi une par une dans le Drive */
+async function addPhotos(input) {
+  const slot = input.dataset.slot, label = input.dataset.label, fichiers = [...input.files];
+  input.value = '';
+  for (const f of fichiers) {
+    let p;
+    try { const [c, prise] = await Promise.all([compress(f), exifDate(f)]); p = { ...c, cap: label, prise, _up: true }; }
+    catch (e) { continue; }
+    P(slot).push(p); renderSaisie();
+    try {
+      const r = await call('envoyerPhoto', { id: V.id, data: p.src, nom: label });
+      p.fileId = r.fileId; delete p._up; cachePhotos.set(r.fileId, p.src);
+      save();
+    } catch (e) {
+      const l = P(slot), i = l.indexOf(p); if (i >= 0) l.splice(i, 1);
+      alertePanel('Une photo n\'a pas pu être envoyée (réseau ?). Ajoute-la à nouveau. Détail : ' + e.message);
+    }
+    renderSaisie();
+  }
+}
+function exportData() {
+  const t = T(), st = S(), c = compute();
+  return JSON.stringify({ app: 'VisiTrac', version: 1, trame: t.id, values: st.values, facades: st.facades, surfaces: st.surfaces || [],
+    photos: Object.fromEntries(Object.entries(st.photos || {}).map(([k, l]) => [k, l.length])),
+    calculs: c.ite ? c.ite.tot : c.surf ? { surfaces: c.surf.total } : { pac: c.pac } });
+}
+function copyData() {
+  const txt = exportData(), out = $('copyOut');
+  const show = ok => { out.innerHTML = `<div class="panel ${ok ? 'okp' : 'ko'}"><h3>${ok ? 'Données copiées' : 'Copie automatique impossible'}</h3><span>${ok ? 'Tu peux les coller dans la conversation avec Claude si besoin.' : 'Sélectionne tout le texte ci-dessous et copie-le.'}</span><textarea class="inp copybox" id="copyTxt" readonly>${esc(txt)}</textarea></div>`; if (!ok) { const ta = $('copyTxt'); ta.focus(); ta.select(); } };
+  try { navigator.clipboard.writeText(txt).then(() => show(true), () => show(false)); } catch (e) { show(false); }
+}
+
+$('btnSend').onclick = () => {
+  const val = validate(), el = $('checkPanel');
+  if (PRESTA) {
+    el.innerHTML = val.out.length
+      ? `<div class="panel ko" tabindex="-1"><h3>Il manque ${val.out.length} élément${val.out.length > 1 ? 's' : ''} avant l'envoi</h3><ul>${val.out.map(m => `<li><b>${esc(m[0])}</b> — ${esc(m[1])}</li>`).join('')}</ul><span class="admin-note">Complète ces points : la visite ne peut pas être envoyée incomplète. Ta saisie est enregistrée.</span></div>`
+      : `<div class="panel okp" tabindex="-1"><h3>Visite complète</h3><span>Une fois envoyée, tu ne pourras plus la modifier.</span><div><button class="primary" data-act="soumettre">Confirmer l'envoi à GESTRAC</button></div></div>`;
+  } else {
+    el.innerHTML = val.out.length
+      ? `<div class="panel ko" tabindex="-1"><h3>Il manque ${val.out.length} élément${val.out.length > 1 ? 's' : ''}</h3><ul>${val.out.map(m => `<li><b>${esc(m[0])}</b> — ${esc(m[1])}</li>`).join('')}</ul><span class="admin-note">Ta saisie est enregistrée dans le Drive au fur et à mesure.</span></div>`
+      : `<div class="panel okp" tabindex="-1"><h3>Visite complète</h3><span>Passe sur « Aperçu du rapport » pour générer le PDF.</span></div>`;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  el.firstElementChild.focus({ preventScroll: true });
+};
+
+/* ---------- Démarrage : lien de mission (?m=…) ou espace administrateur ---------- */
+function demarrer() {
+  const go = params => {
+    if (params && params.demande) { CLIENT = true; JETONC = params.demande; vue = 'portail'; render(); }
+    else if (params && params.m) { PRESTA = true; JETON = params.m; vue = 'visite'; $('main').innerHTML = '<div class="admin-note">Ouverture de la mission…</div>'; ouvrirVisite(''); }
+    else render();
+  };
+  if (SITE_API && SITE_API.indexOf('/exec') < 0) { $('main').innerHTML = '<div class="panel ko"><h3>VisiTrac n\'est pas encore configuré</h3><span>Le fichier config.js doit contenir l\'adresse de ton application Apps Script (celle qui finit par /exec).</span></div>'; return; }
+  if (SITE_API) return go(Object.fromEntries(new URLSearchParams(location.search)));
+  try { google.script.url.getLocation(loc => go(loc.parameter || {})); }
+  catch (e) { go(Object.fromEntries(new URLSearchParams(location.search))); }
+}
+demarrer();
+/* accès pour les tests automatiques */
+window.__vt = { get V() { return V; }, S: () => S(), cachePhotos };
+})();
+</script>
+</body></html>
