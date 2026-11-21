@@ -241,7 +241,7 @@ table.r-sign { display: table; padding: 0; width: 100%; border-collapse: separat
 .carte-fr { height: 440px; border-radius: 12px; border: 1px solid var(--line); overflow: hidden; z-index: 0 } @media (max-width: 520px) { .carte-fr { height: 360px } }
 .leaflet-popup-content a { color: #06796B; font-weight: 600 }
 .legende { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted) } .legende span { display: inline-flex; align-items: center; gap: 6px }
-.legende i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px var(--line) } .legende i.mi { background: #FFFFFF; border: 2px dashed #B42318; box-shadow: none }
+.legende i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px var(--line) } .legende i.mi { background: #8E3FD6; border-radius: 2px; transform: rotate(45deg) scale(.85) }
 .cand { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; background: var(--surface) }
 .cand .l1 { display: flex; justify-content: space-between; align-items: center; gap: 8px }
 .score { font-family: var(--font-cond); font-size: 17px; font-weight: 600; min-width: 44px; text-align: center; padding: 2px 8px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); white-space: nowrap }
@@ -254,6 +254,26 @@ details.reglages > summary { list-style: none; cursor: pointer } details.reglage
 .manque { color: var(--warn); font-weight: 600 }
 .bandeau { width: 100%; text-align: left; cursor: pointer; font: inherit; color: inherit } .bandeau b { color: var(--warn) }
 #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 20; max-width: min(520px, calc(100% - 32px)); background: var(--fg); color: var(--bg); padding: 12px 16px; border-radius: 10px; font-size: 15px; box-shadow: 0 4px 18px rgba(0,0,0,.25) } #toast.ko { background: var(--bad); color: #FFFFFF }
+
+/* Lot 4 */
+.st.st-rech { background: #EFE5FB; color: #6A2DB0 } .st.st-plan { background: #E3ECFB; color: #2F62B5 }
+.coord { display: flex; flex-direction: column; gap: 2px; background: var(--bg); border-radius: 10px; padding: 10px 12px } .coord b { font-size: 17px }
+.telrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px } .telrow b { font-size: 18px; color: var(--accent); margin-right: 4px }
+.dispo { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--line); padding-top: 10px }
+.dispo-l { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px } .dispo-t .dispo-l { font-size: 17px }
+.pt { width: 14px; height: 14px; border-radius: 50%; display: inline-block; flex: none; box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--line) }
+.pt-vert { background: #1D9A4B } .pt-orange { background: #E58A12 } .pt-rouge { background: #D0281B } .pt-inconnu { background: #9AA6A3 }
+.chip-b { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; min-height: 40px; padding: 6px 12px; font-weight: 600; color: var(--fg) } .chip-b[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
+.commencer { display: flex; flex-direction: column; gap: 6px; align-items: stretch } .primary.big { font-size: 19px; min-height: 58px; border-radius: 12px }
+.mk-mission { width: 16px; height: 16px; background: #8E3FD6; border: 2px solid #FFFFFF; border-radius: 3px; transform: rotate(45deg); box-shadow: 0 0 0 1px rgba(0,0,0,.4) }
+ol.histo { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px } ol.histo li { display: flex; flex-direction: column; border-left: 3px solid var(--accent-soft); padding-left: 10px } ol.histo li .num { font-size: 13px; color: var(--muted) }
+.date-visite { color: var(--accent); font-size: 15px }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px } .stats > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column }
+.stats b { font-family: var(--font-cond); font-size: 30px; line-height: 1.1 } .stats span { color: var(--muted); font-size: 14px } .stats .s-non b { color: var(--warn) } .stats .s-oui b { color: var(--accent) }
+.factbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 3; background: var(--bg); padding: 8px 0; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--line) }
+.factlist { display: flex; flex-direction: column; gap: 8px } .frow { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer }
+.frow input { width: 20px; height: 20px; margin-top: 3px; flex: none } .frow .fcol { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 } .frow .l1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap }
+button[disabled] { opacity: .5; cursor: not-allowed }
 </style>
 </head><body>
 <header class="top">
@@ -931,8 +951,11 @@ function copier(txt, id) {
   const show = ok => { const el = $(id); if (el) el.innerHTML = `<div class="panel ${ok ? 'okp' : 'ko'}"><h3>${ok ? 'Lien copié' : 'Copie automatique impossible'}</h3><span>${ok ? 'Colle-le dans WhatsApp, un SMS ou un e-mail.' : 'Sélectionne le lien ci-dessous et copie-le.'}</span><input class="inp" id="${id}-txt" value="${esc(txt)}" readonly></div>`; if (!ok) { const i = $(id + '-txt'); i.focus(); i.select(); } };
   try { navigator.clipboard.writeText(txt).then(() => show(true), () => show(false)); } catch (e) { show(false); }
 }
-const STATUTS = ['À attribuer', 'À envoyer', 'Envoyée', 'En cours', 'Complément demandé', 'Soumise', 'Rapport généré', 'Rapport envoyé'];
-const stCls = s => FINIS.includes(s) ? 'st-ok' : s === 'Soumise' ? 'st-new' : s === 'Complément demandé' ? 'st-ko' : '';
+const LIB = { 'À attribuer': 'Nouveau', 'À envoyer': 'Nouveau · prestataire choisi', 'Recherche lancée': 'Recherche lancée', 'Envoyée': 'Lien envoyé', 'En cours': 'VT en cours', 'Complément demandé': 'Complément demandé', 'Soumise': 'Soumis', 'Rapport généré': 'Rapport généré', 'Rapport envoyé': 'Rapport envoyé' };
+const lib = s => LIB[s] || s;
+const SANS_P = ['À attribuer', 'Recherche lancée'];
+const STATUTS = ['À attribuer', 'Recherche lancée', 'À envoyer', 'Envoyée', 'En cours', 'Complément demandé', 'Soumise', 'Rapport généré', 'Rapport envoyé'];
+const stCls = s => FINIS.includes(s) ? 'st-ok' : s === 'Soumise' ? 'st-new' : s === 'Complément demandé' ? 'st-ko' : s === 'Recherche lancée' ? 'st-rech' : s === 'En cours' || s === 'Envoyée' ? 'st-plan' : '';
 
 /* ---------- Écrans administrateur ---------- */
 function renderConnexion(msg) {
@@ -966,15 +989,16 @@ function dessinerMissions() {
   if (!$('liste')) return;
   const n = s => liste.filter(v => v.statut === s).length;
   const actives = liste.filter(v => !FINIS.includes(v.statut)).length;
-  const f = [['actives', `À traiter · ${actives}`], ...STATUTS.filter(s => n(s)).map(s => [s, `${s} · ${n(s)}`]), ['toutes', `Toutes · ${liste.length}`]];
-  const sansP = n('À attribuer');
+  const f = [['actives', `À traiter · ${actives}`], ...STATUTS.filter(s => n(s)).map(s => [s, `${lib(s)} · ${n(s)}`]), ['toutes', `Toutes · ${liste.length}`]];
+  const sansP = n('À attribuer') + n('Recherche lancée');
   if ($('bandeauRecrut')) $('bandeauRecrut').innerHTML = sansP ? `<button class="panel ko bandeau" data-nav="recrutement"><b>${sansP} mission${sansP > 1 ? 's' : ''} sans prestataire</b><span>Voir les prestataires proposés et les secteurs à couvrir →</span></button>` : '';
   $('filtres').innerHTML = f.map(([k, l]) => `<label class="chip"><input type="radio" name="filtre" data-filtre="${esc(k)}" ${filtre === k ? 'checked' : ''}><span>${esc(l)}</span></label>`).join('');
   const q = recherche.toLowerCase();
   const vis = liste.filter(v => (filtre === 'toutes' || (filtre === 'actives' ? !FINIS.includes(v.statut) : v.statut === filtre))
-    && (!q || [v.client, v.adresse, v.prestataire, nomTrame(v.trame)].join(' ').toLowerCase().includes(q)));
-  $('liste').innerHTML = vis.length ? vis.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Client sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(v.statut)}</span></span><span>${esc(nomTrame(v.trame))}${v.date_prevue ? ' · prévue le ' + dateFr(v.date_prevue) : v.date ? ' · ' + dateFr(v.date) : ''}${v.prestataire ? ' · ' + esc(v.prestataire) : ''}</span><span class="admin-note">${esc(v.adresse || '')}</span></button>`).join('')
+    && (!q || [v.client, v.adresse, v.prestataire, nomTrame(v.trame), lib(v.statut), v.tel].join(' ').toLowerCase().includes(q)));
+  $('liste').innerHTML = vis.length ? vis.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Client sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(lib(v.statut))}</span></span><span>${esc(nomTrame(v.trame))}${v.date_prevue ? ' · prévue le ' + dateFr(v.date_prevue) : v.date ? ' · ' + dateFr(v.date) : ''}${v.prestataire ? ' · ' + esc(v.prestataire) : ''}</span><span class="admin-note">${esc(v.adresse || '')}${v.tel ? ' · 📞 ' + esc(v.tel) : ''}</span>${SANS_P.includes(v.statut) ? `<span data-dispo="${esc(v.id)}"></span>` : ''}</button>`).join('')
     : `<div class="vide"><b>${liste.length ? 'Aucune mission ne correspond' : 'Aucune mission pour l\'instant'}</b><span>${liste.length ? 'Change le filtre ou la recherche.' : 'Appuie sur « Nouvelle mission » pour en créer une.'}</span></div>`;
+  majDispoListe();
 }
 
 async function renderNouvelle() {
@@ -1061,7 +1085,7 @@ function renderFicheClient(R) {
       ${chs.map(h => `<div class="facade"><div class="grid2">${champ('fh_a_' + h.id, 'Adresse', h.adresse)}${champ('fh_f_' + h.id, 'Client final', h.client_final)}</div>${champ('fh_t_' + h.id, 'Téléphone du client final', h.tel_client_final, { type: 'tel' })}<div><button class="ghost" data-act2="sauverChantier" data-id="${esc(h.id)}">Enregistrer ce chantier</button></div></div>`).join('')}
       <div class="facade"><b>Ajouter un chantier</b><div class="grid2">${champ('fh_a_new', 'Adresse', '')}${champ('fh_f_new', 'Client final', '')}</div>${champ('fh_t_new', 'Téléphone du client final', '', { type: 'tel' })}<div><button class="ghost" data-act2="sauverChantier" data-id="">＋ Ajouter</button></div></div>
       <div id="fh_out"></div></div></section>
-    <section class="sec"><h2><span>Missions</span><span class="count">${ms.length}</span></h2><div class="sec-body">${ms.length ? ms.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(v.statut)}</span></span><span>${esc(nomTrame(v.trame))} · ${esc(v.adresse || '')}</span></button>`).join('') : '<span class="admin-note">Aucune mission pour ce client.</span>'}</div></section>` : ''}`;
+    <section class="sec"><h2><span>Missions</span><span class="count">${ms.length}</span></h2><div class="sec-body">${ms.length ? ms.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(lib(v.statut))}</span></span><span>${esc(nomTrame(v.trame))} · ${esc(v.adresse || '')}</span></button>`).join('') : '<span class="admin-note">Aucune mission pour ce client.</span>'}</div></section>` : ''}`;
 }
 async function sauverClient(btn) {
   if (!valeur('fc_rs')) return message('fc_out', false, 'La raison sociale est obligatoire');
@@ -1104,18 +1128,18 @@ const EXPERIENCES = ['Aucune', 'Bricolage / multiservices', 'Bâtiment', 'Visite
 const CRITERES = [['photos', 'Qualité des photos'], ['consignes', 'Respect des consignes'], ['delais', 'Respect des délais'], ['mesures', 'Qualité des mesures'], ['communication', 'Communication']];
 const PARAMS_DEF = {
   poids: { tarif: 45, fiabilite: 20, experience: 20, disponibilite: 10, distance: 5 },
-  groupe_km: 40, rayon_km: 50, cible: 60, confort: 80, max: 100,
+  groupe_km: 40, rayon_km: 60, cible: 60, confort: 80, max: 100,
   questions: "Merci pour votre retour !\nPour organiser la visite, pouvez-vous me confirmer :\n1. Votre tarif HT pour cette mission ?\n2. Vos disponibilités dans les prochains jours ?\n3. Avez-vous un mètre laser et un smartphone qui prend de bonnes photos ?\n4. Êtes-vous auto-entrepreneur (pour la facture) ?\n5. Votre numéro WhatsApp, pour vous envoyer la trame et l'adresse ?\nMerci à vous.",
   modeles: {
     ite: { titre: "Prise de mesures et photos d'une façade – {ville}",
       annonce: "Recherche profil bricoleur ou multiservices pour une mission simple à {ville} : prise de mesures et photos d'une façade ({nb_visites}).\nMètre laser obligatoire.\nAucune expérience requise, une trame vous sera fournie.",
-      message: "Bonjour,\nNous sommes un bureau de contrôle, l'intervention est à réaliser chez notre client à {ville}.\nLa mission consiste à :\n\n- Prendre les mesures du bâtiment (longueur et hauteur des façades).\n- Mesurer les ouvertures (portes et fenêtres).\n- Prendre des photos du bâtiment.\n- Compléter une trame qui vous sera fournie.\n\nMatériel fortement recommandé : mètre laser.\nAucune expérience requise : une trame vous sera transmise et devra être suivie sur place.\nComptez environ 30 minutes sur place, grand maximum.\nPouvez-vous me préciser votre tarif pour ce type d'intervention ?\nMerci à vous." },
+      message: "Bonjour,\nNous avons une intervention à prévoir chez notre client, dans le secteur suivant :\n{secteur}\n\nLa mission consiste à réaliser :\n• Des photos des façades ;\n• Des prises de mesures ;\n• Un croquis à main levée.\n\nLa prestation dure environ 30 minutes sur place.\nPouvez-vous nous indiquer votre tarif pour cette intervention ?" },
     pac: { titre: "Relevés et photos d'un logement (chauffage) – {ville}",
       annonce: "Recherche profil bricoleur, plombier-chauffagiste ou multiservices pour une mission simple à {ville} : relevés et photos d'un logement et de son chauffage, avant l'installation d'une pompe à chaleur ({nb_visites}).\nSmartphone avec un bon appareil photo obligatoire, mètre laser recommandé.\nAucune expérience requise, une trame vous sera fournie.",
-      message: "Bonjour,\nNous sommes un bureau de contrôle, l'intervention est à réaliser chez notre client à {ville}.\nLa mission consiste à :\n\n- Relever les dimensions des pièces principales (surface, hauteur sous plafond).\n- Prendre des photos du logement, du chauffage actuel et de l'emplacement prévu pour la pompe à chaleur.\n- Compléter une trame qui vous sera fournie.\n\nMatériel recommandé : mètre laser et smartphone.\nAucune expérience requise : une trame vous sera transmise et devra être suivie sur place.\nComptez environ 30 à 45 minutes sur place.\nPouvez-vous me préciser votre tarif pour ce type d'intervention ?\nMerci à vous." },
+      message: "Bonjour,\nNous avons une intervention à prévoir chez notre client, dans le secteur suivant :\n{secteur}\n\nLa mission consiste à réaliser :\n• Des photos du logement et du chauffage actuel ;\n• Des relevés des pièces (surface, hauteur sous plafond) ;\n• Des photos de l'emplacement prévu pour la pompe à chaleur.\n\nLa prestation dure environ 30 minutes sur place.\nPouvez-vous nous indiquer votre tarif pour cette intervention ?" },
     admin: { titre: "Faire signer des documents chez un particulier – {ville}",
       annonce: "Recherche une personne sérieuse et ponctuelle à {ville} pour faire signer des documents chez un particulier ({nb_visites}).\nMission courte, aucune compétence technique requise.\nLes documents et les consignes vous seront fournis.",
-      message: "Bonjour,\nNous sommes un bureau de contrôle. La mission consiste à vous rendre chez notre client à {ville} pour lui faire signer des documents, puis à nous renvoyer les documents signés (photo ou scan).\nAucune compétence technique requise : les documents et les consignes vous seront fournis.\nComptez environ 15 à 20 minutes sur place.\nPouvez-vous me préciser votre tarif pour ce type d'intervention ?\nMerci à vous." } } };
+      message: "Bonjour,\nNous avons une intervention à prévoir chez notre client, dans le secteur suivant :\n{secteur}\n\nLa mission consiste à :\n• Faire signer des documents à notre client ;\n• Nous renvoyer les documents signés (photo ou scan).\n\nLa prestation dure environ 15 minutes sur place.\nPouvez-vous nous indiquer votre tarif pour cette intervention ?" } } };
 
 let RECRUT = null, GEO = {}, prestaVue = 'liste', prestaFiltre = 'actifs', prestaComp = '', prestaQ = '', rechLibre = null, confirmer = null;
 const params = () => {
@@ -1177,7 +1201,7 @@ function evalPresta(p, missionsGeo, P) {
   const fiab = moy != null ? moy / 5 : ({ 'Très fiable': 1, 'Régulier': 0.9, 'Validé': 0.8 }[p.statut] ?? 0.5);
   const exp = Math.max(Math.min(1, 0.5 + 0.1 * faites), ['Validé', 'Régulier', 'Très fiable'].includes(p.statut) ? 0.7 : 0);
   const motifs = [p.statut || 'sans statut', moy != null ? `note ${fmt(moy, 1)}/5` : '', faites ? `${faites} mission${faites > 1 ? 's' : ''} faite${faites > 1 ? 's' : ''}` : 'aucune mission faite',
-    d != null ? `${fmt(d, 0)} km${dansZone ? ' (dans sa zone)' : ' (hors de sa zone déclarée)'}` : 'position inconnue'].filter(Boolean);
+    d != null ? `${fmt(d, 0)} km${dansZone ? ' (dans sa zone)' : ' (hors de sa zone habituelle : à négocier)'}` : 'position inconnue'].filter(Boolean);
   return Object.assign(noter({ tarif: tarifDe(p.tarif_min, p.tarif_max), fiab, exp, dispo: p.statut === 'Indisponible' ? 0 : 0.7, d, motifs }, P), { d, dansZone });
 }
 function evalCandidat(c, missionsGeo, P) {
@@ -1239,8 +1263,8 @@ async function dessinerCarte(prestas, missions) {
   }
   for (const m of missions) {
     if (!m.geo) continue;
-    L.circleMarker([m.geo.lat, m.geo.lon], { radius: 7, color: '#B42318', weight: 3, fillColor: '#FFFFFF', fillOpacity: 1, dashArray: '3 3' }).addTo(carte)
-      .bindPopup(`<b>Mission sans prestataire</b><br>${esc(m.client || '')}<br>${esc(nomTrame(m.trame))}<br>${esc(m.adresse || '')}`);
+    L.marker([m.geo.lat, m.geo.lon], { icon: L.divIcon({ className: '', html: '<div class="mk-mission"></div>', iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -8] }), zIndexOffset: 500 }).addTo(carte)
+      .bindPopup(`<b>${esc(m.client || 'Client sans nom')}</b><br>${esc(nomTrame(m.trame))} · ${esc(lib(m.statut))}<br>${m.prestataire ? 'Prestataire : ' + esc(m.prestataire) : '<b style="color:#B42318">Sans prestataire</b>'}<br>${esc(m.adresse || '')}<br><a href="#" data-open="${esc(m.id)}">Ouvrir la mission</a>`);
     pts.push([m.geo.lat, m.geo.lon]);
   }
   if (pts.length) carte.fitBounds(pts, { padding: [30, 30], maxZoom: 10 });
@@ -1282,7 +1306,7 @@ function dessinerPrestas() {
     const sans = vis.filter(p => !posP(p));
     box.innerHTML = `<label class="chip"><input type="checkbox" id="zones"><span>Afficher les zones couvertes</span></label>
       <div id="carte" class="carte-fr" role="region" aria-label="Carte des prestataires"></div>
-      <div class="legende">${['Très fiable', 'Validé', 'À tester', 'Nouveau', 'Indisponible', 'À éviter', 'Réserve'].map(s => `<span><i style="background:${COUL_P[s]}"></i>${s}</span>`).join('')}<span><i class="mi"></i>Mission sans prestataire</span></div>
+      <div class="legende">${['Très fiable', 'Validé', 'À tester', 'Nouveau', 'Indisponible', 'À éviter', 'Réserve'].map(s => `<span><i style="background:${COUL_P[s]}"></i>${s}</span>`).join('')}<span><i class="mi"></i>Nouvelle mission – client dont la visite reste à traiter</span></div>
       ${sans.length ? `<div class="aide">Pas encore placés sur la carte (ville manquante ou introuvable) : ${sans.map(p => `<button class="linkbtn" data-fiche-presta="${esc(p.id)}">${esc(p.nom)}</button>`).join(', ')}</div>` : ''}`;
     $('zones').onchange = () => afficherCarte(vis);
     afficherCarte(vis);
@@ -1296,7 +1320,7 @@ function dessinerPrestas() {
     : '<div class="vide"><b>Aucun prestataire dans ce filtre</b><span>Change le filtre, ou ajoute un prestataire.</span></div>';
 }
 async function afficherCarte(vis) {
-  const ms = (liste || []).filter(v => v.statut === 'À attribuer');
+  const ms = (liste || []).filter(v => !FINIS.includes(v.statut));
   try { await geocoder(ms.map(m => m.adresse)); } catch (e) {}
   dessinerCarte(vis, ms.map(m => Object.assign({}, m, { geo: GEO[m.adresse] || null })));
 }
@@ -1329,7 +1353,7 @@ function renderFichePresta(R) {
         ${champ('ev_comm', 'Commentaire', '', { area: true })}
         <div id="ev_out"></div><div><button class="ghost" data-act2="evaluer" data-id="${esc(p.id)}">Enregistrer la note</button></div></div></details>
     </div></section>
-    <section class="sec"><h2><span>Missions</span><span class="count">${ms.length}</span></h2><div class="sec-body">${ms.length ? ms.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(v.statut)}</span></span><span>${esc(nomTrame(v.trame))} · ${esc(v.adresse || '')}</span></button>`).join('') : '<span class="admin-note">Aucune mission pour ce prestataire.</span>'}</div></section>` : ''}`;
+    <section class="sec"><h2><span>Missions</span><span class="count">${ms.length}</span></h2><div class="sec-body">${ms.length ? ms.map(v => `<button class="carte ligne" data-open="${esc(v.id)}"><span class="l1"><b>${esc(v.client || 'Sans nom')}</b><span class="st ${stCls(v.statut)}">${esc(lib(v.statut))}</span></span><span>${esc(nomTrame(v.trame))} · ${esc(v.adresse || '')}</span></button>`).join('') : '<span class="admin-note">Aucune mission pour ce prestataire.</span>'}</div></section>` : ''}`;
 }
 async function sauverPresta(btn) {
   if (!valeur('fp_nom')) return message('fp_out', false, 'Le nom est obligatoire');
@@ -1359,7 +1383,7 @@ async function renderRecrutement() {
   $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
   try { await Promise.all([chargerRef(), chargerRecrut(), liste ? null : api('lister').then(l => { liste = l; })]); }
   catch (e) { if (!erreurAcces(e)) message('main', false, 'Chargement impossible', esc(e.message)); return; }
-  const P = params(), ms = liste.filter(v => v.statut === 'À attribuer');
+  const P = params(), ms = liste.filter(v => SANS_P.includes(v.statut));
   $('main').innerHTML = `<div class="intro-row"><strong class="h1">Recrutement</strong></div>
     <div class="intro"><span>Les missions <b>sans prestataire</b> sont regroupées quand elles sont à moins de <b>${P.groupe_km} km</b> les unes des autres : un même prestataire peut les faire.</span></div>
     ${(n => n.length ? `<div class="warnline">${n.length} prestataire${n.length > 1 ? 's' : ''} actif${n.length > 1 ? 's' : ''} sans ville : ${n.map(p => `<button class="linkbtn" data-fiche-presta="${esc(p.id)}">${esc(p.nom)}</button>`).join(', ')}. Sans ville, VisiTrac ne peut pas ${n.length > 1 ? 'les' : 'le'} proposer : ouvre ${n.length > 1 ? 'leur' : 'sa'} fiche pour l'ajouter.</div>` : '')(REFD.prestataires.filter(p => !HORS.includes(p.statut) && p.actif !== 'non' && !posP(p) && !p.departements))}
@@ -1376,7 +1400,7 @@ async function renderRecrutement() {
 }
 function groupesActuels() {
   const P = params();
-  const ms = liste.filter(v => v.statut === 'À attribuer').map(v => Object.assign({}, v, { geo: GEO[v.adresse] || null }));
+  const ms = liste.filter(v => SANS_P.includes(v.statut)).map(v => Object.assign({}, v, { geo: GEO[v.adresse] || null }));
   ms.forEach(m => { const vd = villeDe(m.adresse, m.geo); m.ville = vd.ville; m.cp = vd.cp; m.dep = vd.dep; });
   return grouper(ms, P.groupe_km);
 }
@@ -1394,15 +1418,17 @@ function groupeHTML(g, gi, P) {
   const compSel = (RECRUT.compSel || {})[cleGroupe(g)] || comps[0] || 'ite';
   const loc = g.every(m => m.geo);
   // Prestataires de la base, classés
+  const rayonG = (RECRUT.rayonG || {})[cleGroupe(g)] || P.rayon_km;
   const cands = REFD.prestataires.filter(p => p.statut !== 'À éviter' && p.statut !== 'Indisponible' && comps.every(c => aComp(p, c)))
     .map(p => ({ p, e: evalPresta(p, g, P) }))
-    .filter(x => x.e.dansZone || (x.e.d != null && x.e.d <= P.rayon_km));
+    .filter(x => x.e.dansZone || (x.e.d != null && x.e.d <= rayonG));
   const actifs = cands.filter(x => x.p.statut !== 'Réserve' && x.p.actif !== 'non').sort((a, b) => b.e.total - a.e.total);
   const reserve = cands.filter(x => x.p.statut === 'Réserve').sort((a, b) => b.e.total - a.e.total);
   const ids = g.map(m => m.id);
   const candidats = (RECRUT.candidats || []).filter(c => c.statut === 'Candidat' && String(c.missions || '').split(',').some(id => ids.includes(id)))
     .map(c => ({ c, e: evalCandidat(c, g, P) })).sort((a, b) => b.e.total - a.e.total);
-  const vars = { ville: villes.length > 1 ? villes[0].replace(/ \(\d+\)$/, '') + ' et alentours' : (villes[0] || '').replace(/ \(\d+\)$/, ''), nb_visites: g.length > 1 ? g.length + ' visites dans le secteur' : '1 visite' };
+  const secteur = [...new Set(g.map(m => (m.cp ? m.cp + ' ' : '') + m.ville))].join(', ');
+  const vars = { secteur, ville: villes.length > 1 ? villes[0].replace(/ \(\d+\)$/, '') + ' et alentours' : (villes[0] || '').replace(/ \(\d+\)$/, ''), nb_visites: g.length > 1 ? g.length + ' visites dans le secteur' : '1 visite' };
   const M = P.modeles[compSel] || P.modeles.ite;
   const adrAnnonce = g[0].cp ? `${g[0].cp} ${g[0].ville}` : g[0].ville;
   const ligneP = ({ p, e }) => `<div class="cand"><div class="l1"><b>${esc(p.nom)}</b><span class="score" title="Score sur 100">${e.horsBudget ? 'Hors budget' : e.total}</span></div>
@@ -1410,10 +1436,12 @@ function groupeHTML(g, gi, P) {
       <div class="btnrow">${confirmer === 'P:' + gi + ':' + p.id ? `<button class="primary" data-act2="attribuerGroupe" data-g="${gi}" data-p="${esc(p.id)}">Confirmer : ${g.length > 1 ? 'les ' + g.length + ' visites' : 'la visite'} à ${esc(p.nom)}</button><button class="linkbtn" data-act2="annulerConf">Annuler</button>`
         : `<button class="ghost" data-act2="demanderConf" data-k="P:${gi}:${esc(p.id)}">Attribuer${g.length > 1 ? ' les ' + g.length + ' visites' : ''}</button>`}${p.tel ? `<a class="linkbtn" href="tel:${esc(String(p.tel).split(/[\/;]/)[0].replace(/[^\d+]/g, ''))}">Appeler</a>` : ''}<button class="linkbtn" data-fiche-presta="${esc(p.id)}">Fiche</button></div></div>`;
   return `<section class="sec groupe"><h2><span>${esc(villes.join(' · '))}</span><span class="count">${g.length} visite${g.length > 1 ? 's' : ''}</span></h2><div class="sec-body">
-    <div class="gm">${g.map(m => `<button class="carte ligne" data-open="${esc(m.id)}"><span class="l1"><b>${esc(m.client || 'Client sans nom')}</b><span class="admin-note">${esc(nomTrame(m.trame))}</span></span><span class="admin-note">${esc(m.adresse || '')}${m.date_prevue ? ' · prévue le ' + dateFr(m.date_prevue) : ''}</span></button>`).join('')}</div>
+    <div class="gm">${g.map(m => `<button class="carte ligne" data-open="${esc(m.id)}"><span class="l1"><b>${esc(m.client || 'Client sans nom')}</b><span class="st ${stCls(m.statut)}">${esc(lib(m.statut))}</span></span><span class="admin-note">${esc(nomTrame(m.trame))}</span><span class="admin-note">${esc(m.adresse || '')}${m.date_prevue ? ' · prévue le ' + dateFr(m.date_prevue) : ''}</span></button>`).join('')}</div>
     ${!loc ? '<div class="warnline">Adresse introuvable pour au moins une mission : vérifie son adresse (n°, rue, code postal, ville).</div>' : ''}
+    <div class="btnrow"><label for="rg_${gi}" class="admin-note">Rayon de recherche</label><select class="inp" id="rg_${gi}" data-grayon="${esc(cleGroupe(g))}" style="width:auto">${optionsHTML([...new Set([P.rayon_km, 80, 100, 150, 200, rayonG])].sort((a, b) => a - b).map(k => [String(k), k + ' km' + (k === P.rayon_km ? ' (réglage)' : ' (élargi)')]), String(rayonG))}</select>
+      ${g.some(m => m.statut === 'À attribuer') ? `<button class="linkbtn" data-act2="rechercheGroupe" data-g="${gi}">Marquer « Recherche lancée »</button>` : '<span class="st st-rech">Recherche lancée</span>'}</div>
     <h3 class="sous-titre">Dans ta base</h3>
-    ${actifs.length ? actifs.slice(0, 6).map(ligneP).join('') : `<div class="warnline">Personne dans ta base ne couvre ce secteur${comps.length ? ' pour ce type de visite' : ''} (rayon de recherche : ${P.rayon_km} km).</div>`}
+    ${actifs.length ? actifs.slice(0, 6).map(ligneP).join('') : `<div class="warnline">Personne dans ta base ne couvre ce secteur${comps.length ? ' pour ce type de visite' : ''} (rayon de recherche : ${rayonG} km).</div>`}
     ${reserve.length ? `<details><summary class="linkbtn">En réserve (${reserve.length}) : à n'utiliser que si besoin</summary>${reserve.map(ligneP).join('')}</details>` : ''}
     <details class="recherche" ${actifs.length ? '' : 'open'}><summary><b>🔎 Chercher un nouveau prestataire</b></summary><div class="sous">
       <div class="field"><label for="cs_${gi}">Type d'annonce</label><select class="inp" id="cs_${gi}" data-gcomp="${esc(cleGroupe(g))}">${optionsHTML(COMPETENCES, compSel)}</select></div>
@@ -1500,7 +1528,7 @@ function dessinerReglages() {
     <div class="field"><span class="lbl">Pondérations du score (total ramené à 100)</span><div class="grid3">${[['tarif', 'Tarif'], ['fiabilite', 'Fiabilité'], ['experience', 'Expérience'], ['disponibilite', 'Disponibilité'], ['distance', 'Distance']].map(([k, l]) => champ('rg_w_' + k, l + ' (%)', String(w[k]), { type: 'number' })).join('')}</div></div>
     ${COMPETENCES.map(([k, l]) => `<details><summary class="linkbtn">Modèles : ${esc(l)}</summary><div class="sous">${champ('rg_' + k + '_titre', 'Titre de l\'annonce', P.modeles[k].titre)}${champ('rg_' + k + '_annonce', 'Texte de l\'annonce', P.modeles[k].annonce, { area: true })}${champ('rg_' + k + '_message', 'Message type (réponse aux candidats)', P.modeles[k].message, { area: true })}</div></details>`).join('')}
     <details><summary class="linkbtn">Modèle : questions de suivi</summary><div class="sous">${champ('rg_questions', 'Questions de suivi', P.questions, { area: true })}</div></details>
-    <span class="hint">Dans les modèles, {ville} et {nb_visites} sont remplacés automatiquement.</span>
+    <span class="hint">Dans les modèles, {secteur} (code postal + ville), {ville} et {nb_visites} sont remplacés automatiquement. L'adresse exacte n'est jamais mise : elle est donnée au prestataire retenu dans son lien de mission.</span>
     <div id="rg_out"></div><div class="btnrow"><button class="primary" data-act2="sauverReglages">Enregistrer les réglages</button><button class="linkbtn" data-act2="reglagesDefaut">Revenir aux réglages d'origine</button></div>`;
 }
 async function sauverReglages(btn, defaut) {
@@ -1520,13 +1548,149 @@ async function sauverReglages(btn, defaut) {
   catch (e) { btn.disabled = false; message('rg_out', false, 'Enregistrement impossible', esc(e.message)); }
 }
 document.body.addEventListener('change', e => {
+  const gr = e.target.closest('[data-grayon]');
+  if (gr && RECRUT) { (RECRUT.rayonG ||= {})[gr.dataset.grayon] = Number(gr.value); return dessinerGroupes(); }
   const s = e.target.closest('[data-gcomp]'); if (!s || !RECRUT) return;
   (RECRUT.compSel ||= {})[s.dataset.gcomp] = s.value; dessinerGroupes();
   const d = document.querySelectorAll('details.recherche'); d.forEach(x => { if (x.querySelector(`[data-gcomp="${CSS.escape(s.dataset.gcomp)}"]`)) x.open = true; });
 });
-const ACTIONS_RECRUT = { prestaVue: b => { prestaVue = b.dataset.v; renderPrestataires(); }, copierTexte, evaluer: b => evaluerPresta(b, false), supprEval: b => evaluerPresta(b, true),
+async function rechercheGroupe(btn) {
+  const g = groupesActuels()[+btn.dataset.g]; if (!g) return;
+  btn.disabled = true;
+  try { for (const m of g.filter(x => x.statut === 'À attribuer')) await api('rechercheLancee', { id: m.id, on: true }); liste = await api('lister'); dessinerGroupes(); toast('Statut « Recherche lancée » appliqué.'); }
+  catch (e) { btn.disabled = false; toast('Action impossible : ' + e.message, true); }
+}
+const ACTIONS_RECRUT = { rechercheGroupe, prestaVue: b => { prestaVue = b.dataset.v; renderPrestataires(); }, copierTexte, evaluer: b => evaluerPresta(b, false), supprEval: b => evaluerPresta(b, true),
   demanderConf, annulerConf, attribuerGroupe, ajouterCandidat, retenir: b => retenir(b, false), reserver: b => retenir(b, true), ecarter, rechercheLibre,
   sauverReglages: b => sauverReglages(b, false), reglagesDefaut: b => sauverReglages(b, true) };
+
+/* ---------- Lot 4 : disponibilité des techniciens, historique, facturation ---------- */
+const DISPO_TXT = { vert: 'Technicien disponible dans cette zone', orange: 'Technicien à proximité, hors de sa zone habituelle', rouge: 'Technicien à recruter', inconnu: 'Adresse introuvable : vérifie l\'adresse du chantier' };
+const rayonMission = {};
+function dispoPour(m, rayon) {
+  if (!m.geo) return { niveau: 'inconnu', res: [] };
+  const P = params(), vd = villeDe(m.adresse, m.geo), mm = Object.assign({}, m, { dep: vd.dep }), comp = COMP_TRAME[m.trame];
+  const res = REFD.prestataires.filter(p => !HORS.includes(p.statut) && p.actif !== 'non' && (!comp || aComp(p, comp)))
+    .map(p => ({ p, e: evalPresta(p, [mm], P) })).filter(x => x.e.dansZone || (x.e.d != null && x.e.d <= rayon))
+    .sort((a, b) => (b.e.dansZone - a.e.dansZone) || (b.e.total - a.e.total));
+  return { niveau: res.some(x => x.e.dansZone) ? 'vert' : res.length ? 'orange' : 'rouge', res };
+}
+const pastille = (niv, txt) => `<span class="dispo-l"><i class="pt pt-${niv}"></i>${esc(txt || DISPO_TXT[niv])}</span>`;
+async function majDispoListe() {
+  const ms = (liste || []).filter(v => SANS_P.includes(v.statut));
+  if (!ms.length || !document.querySelector('[data-dispo]')) return;
+  try { await Promise.all([chargerRef(), chargerRecrut()]); await geocoder(ms.map(m => m.adresse)); } catch (e) { return; }
+  const R = params().rayon_km;
+  ms.forEach(m => { const el = document.querySelector(`[data-dispo="${CSS.escape(m.id)}"]`); if (el) el.innerHTML = pastille(dispoPour(Object.assign({}, m, { geo: GEO[m.adresse] || null }), R).niveau); });
+}
+async function majDispoMission() {
+  const box = $('dispoBox'); if (!box || !V) return;
+  const adr = S().values.adresse || (V.mission || {}).chantier || '';
+  try { await Promise.all([chargerRef(), chargerRecrut()]); await geocoder([adr]); } catch (e) { box.innerHTML = `<div class="warnline">Recherche impossible : ${esc(e.message)}</div>`; return; }
+  if (!$('dispoBox')) return;
+  const P = params(), rayon = rayonMission[V.id] || P.rayon_km, d = dispoPour({ adresse: adr, geo: GEO[adr] || null, trame: V.trame }, rayon);
+  const choix = [...new Set([P.rayon_km, 80, 100, 150, 200])].sort((a, b) => a - b);
+  $('dispoBox').innerHTML = `<div class="dispo-t">${pastille(d.niveau)}</div>
+    <div class="field"><span class="lbl">Rayon de recherche${rayon !== P.rayon_km ? ' <span class="tag calc">élargi pour cette mission</span>' : ''}</span><div class="chips">${choix.map(k => `<button class="chip-b" data-act="rayon" data-km="${k}" aria-pressed="${k === rayon}">${k} km${k === P.rayon_km ? ' (réglage)' : ''}</button>`).join('')}
+      <span class="btnrow"><input class="inp" id="rayonPerso" type="number" min="1" placeholder="Autre" style="width:96px" value="${choix.includes(rayon) ? '' : rayon}"><button class="ghost" data-act="rayonPerso">OK</button></span></div></div>
+    ${d.res.slice(0, 6).map(({ p, e }) => `<div class="cand"><div class="l1"><b>${esc(p.nom)}</b>${badgeP(p.statut)}</div>
+      <span class="admin-note">${e.d != null ? fmt(e.d, 0) + ' km · ' : ''}${e.dansZone ? 'dans sa zone habituelle' : `hors de sa zone habituelle${num(p.rayon_km) ? ' (' + fmt(num(p.rayon_km), 0) + ' km)' : ''} : à négocier`} · ${esc(tarifTxt(p))}${p.tel ? ' · ' + esc(p.tel) : ''}</span>
+      <div class="btnrow"><button class="ghost" data-act="choisirP" data-p="${esc(p.id)}">Choisir pour cette mission</button><button class="linkbtn" data-fiche-presta="${esc(p.id)}">Fiche</button></div></div>`).join('')}
+    ${d.niveau === 'rouge' || d.niveau === 'orange' ? `<div class="btnrow"><button class="ghost" data-nav="recrutement">Chercher un nouveau prestataire →</button>${V.statut === 'À attribuer' ? '<button class="linkbtn" data-act="recherche" data-on="1">Marquer « Recherche lancée »</button>' : V.statut === 'Recherche lancée' ? '<button class="linkbtn" data-act="recherche" data-on="0">Annuler « Recherche lancée »</button>' : ''}</div>` : ''}`;
+}
+async function chargerHisto() {
+  const box = $('histoBox'); if (!box || !V) return;
+  try {
+    const h = await api('historique', { id: V.id });
+    box.innerHTML = h.length ? `<ol class="histo">${h.map(x => { const d = new Date(x.le); return `<li><span class="num">${isNaN(d) ? esc(x.le) : d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span><b>${esc(x.action)}</b>${x.detail ? `<span class="admin-note">${esc(x.detail)}</span>` : ''}</li>`; }).join('')}</ol>` : '<span class="admin-note">Aucun événement enregistré.</span>';
+  } catch (e) { box.innerHTML = `<div class="warnline">${esc(e.message)}</div>`; }
+}
+document.addEventListener('toggle', e => { if (e.target.id === 'histo' && e.target.open) chargerHisto(); }, true);
+function infoRelance(m) {
+  if (V.statut !== 'Envoyée' || m.date_prevue) return '';
+  const le = m.lien_envoye_le ? new Date(m.lien_envoye_le) : null;
+  if (m.relance_le) { const r = new Date(m.relance_le); return `<div class="aide">Relance envoyée au prestataire le ${r.toLocaleDateString('fr-FR')} à ${r.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Sans date sous 24 h, tu recevras une alerte.</div>`; }
+  if (le && !isNaN(le)) { const r = new Date(le.getTime() + 864e5); return `<div class="aide">Pas encore de date de visite. Relance automatique prévue le ${r.toLocaleDateString('fr-FR')} vers ${String(Math.max(8, Math.min(r.getHours(), 19))).padStart(2, '0')} h si le prestataire ne l'a pas renseignée.</div>`; }
+  return '';
+}
+
+/* ---------- Écran Suivi des facturations ---------- */
+const REALISEES = ['Soumise', 'Complément demandé', 'Rapport généré', 'Rapport envoyé'];
+let factF = { periode: 'mois', du: '', au: '', donneur: '', etat: 'non' }; const factSel = new Set();
+const dateReal = v => (v.date && /^\d{4}-\d{2}-\d{2}/.test(v.date) ? v.date.slice(0, 10) : '') || (v.soumis_le ? String(v.soumis_le).slice(0, 10) : '');
+const moisFr = k => { const [y, m] = k.split('-'); return new Date(+y, +m - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }); };
+const donneurDe = v => v.donneur || 'Particulier (sans donneur d\'ordre)';
+function bornes() {
+  const t = new Date(), k = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  if (factF.periode === 'mois') return [k(t) + '-01', k(t) + '-31'];
+  if (factF.periode === 'prec') { const p = new Date(t.getFullYear(), t.getMonth() - 1, 1); return [k(p) + '-01', k(p) + '-31']; }
+  if (factF.periode.startsWith('m:')) return [factF.periode.slice(2) + '-01', factF.periode.slice(2) + '-31'];
+  if (factF.periode === 'perso') return [factF.du || '0000', factF.au || '9999'];
+  return ['0000', '9999'];
+}
+function visitesPeriode() {
+  const [a, b] = bornes();
+  return (liste || []).filter(v => REALISEES.includes(v.statut)).map(v => Object.assign({}, v, { dr: dateReal(v) }))
+    .filter(v => v.dr >= a && v.dr <= b && (!factF.donneur || donneurDe(v) === factF.donneur)).sort((x, y) => y.dr.localeCompare(x.dr));
+}
+async function renderFacturation() {
+  $('main').innerHTML = '<div class="admin-note">Chargement…</div>';
+  try { liste = await api('lister'); } catch (e) { if (!erreurAcces(e)) message('main', false, 'Chargement impossible', esc(e.message)); return; }
+  const real = liste.filter(v => REALISEES.includes(v.statut));
+  const mois = [...new Set(real.map(dateReal).filter(Boolean).map(d => d.slice(0, 7)))].sort().reverse();
+  const donneurs = [...new Set(real.map(donneurDe))].sort();
+  $('main').innerHTML = `<div class="intro-row"><strong class="h1">Suivi des facturations</strong></div>
+    <div class="intro"><span>Seules les visites <b>réalisées</b> apparaissent ici (transmises par le prestataire ou avec rapport). La date retenue est la date de visite.</span></div>
+    <div class="grid2"><div class="field"><label for="ff_per">Période</label><select class="inp" id="ff_per">${optionsHTML([['mois', 'Ce mois-ci'], ['prec', 'Mois précédent'], ...mois.map(m => ['m:' + m, moisFr(m).replace(/^./, c => c.toUpperCase())]), ['perso', 'Période personnalisée…'], ['tout', 'Toutes les dates']], factF.periode)}</select></div>
+      <div class="field"><label for="ff_don">Client donneur d'ordre</label><select class="inp" id="ff_don">${optionsHTML([['', 'Tous les clients'], ...donneurs.map(d => [d, d])], factF.donneur)}</select></div></div>
+    <div class="grid2" id="ff_perso" ${factF.periode === 'perso' ? '' : 'hidden'}>${champ('ff_du', 'Du', factF.du, { type: 'date' })}${champ('ff_au', 'Au', factF.au, { type: 'date' })}</div>
+    <div class="chips">${[['non', 'Non facturées'], ['oui', 'Facturées'], ['toutes', 'Toutes']].map(([k, l]) => `<label class="chip"><input type="radio" name="ff_etat" value="${k}" ${factF.etat === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
+    <div id="factOut"></div>`;
+  $('ff_per').onchange = () => { factF.periode = $('ff_per').value; $('ff_perso').hidden = factF.periode !== 'perso'; factSel.clear(); dessinerFact(); };
+  $('ff_don').onchange = () => { factF.donneur = $('ff_don').value; factSel.clear(); dessinerFact(); };
+  $('ff_du').onchange = () => { factF.du = $('ff_du').value; dessinerFact(); }; $('ff_au').onchange = () => { factF.au = $('ff_au').value; dessinerFact(); };
+  document.querySelectorAll('[name="ff_etat"]').forEach(r => r.onchange = () => { factF.etat = r.value; factSel.clear(); dessinerFact(); });
+  dessinerFact();
+}
+function dessinerFact() {
+  const box = $('factOut'); if (!box) return;
+  const per = visitesPeriode(), nonF = per.filter(v => !v.facturee_le), oui = per.filter(v => v.facturee_le);
+  const vis = factF.etat === 'non' ? nonF : factF.etat === 'oui' ? oui : per;
+  [...factSel].forEach(id => { if (!vis.some(v => v.id === id)) factSel.delete(id); });
+  const parD = {}; per.forEach(v => { const k = donneurDe(v); (parD[k] ||= { n: 0, nf: 0 }); parD[k].n++; if (!v.facturee_le) parD[k].nf++; });
+  const ns = factSel.size;
+  box.innerHTML = `<div class="stats"><div><b class="num">${per.length}</b><span>visite${per.length > 1 ? 's' : ''} réalisée${per.length > 1 ? 's' : ''}</span></div><div class="s-non"><b class="num">${nonF.length}</b><span>non facturée${nonF.length > 1 ? 's' : ''}</span></div><div class="s-oui"><b class="num">${oui.length}</b><span>facturée${oui.length > 1 ? 's' : ''}</span></div></div>
+    ${Object.keys(parD).length > 1 ? `<div class="aide">${Object.entries(parD).map(([k, x]) => `<b>${esc(k)}</b> : ${x.n} visite${x.n > 1 ? 's' : ''}${x.nf ? ` (${x.nf} non facturée${x.nf > 1 ? 's' : ''})` : ''}`).join(' · ')}</div>` : ''}
+    ${vis.length ? `<div class="factbar"><label class="chip"><input type="checkbox" id="ff_all" ${ns && ns === vis.length ? 'checked' : ''}><span>Tout sélectionner</span></label><span class="admin-note">${ns} sélectionnée${ns > 1 ? 's' : ''}</span>
+      <div class="btnrow"><button class="ghost" data-act2="factCopier" ${ns ? '' : 'disabled'}>Copier les lignes</button><button class="ghost" data-act2="factCsv" ${ns ? '' : 'disabled'}>Télécharger (Excel)</button>${factF.etat !== 'oui' ? `<button class="primary" data-act2="factMarquer" data-v="1" ${ns ? '' : 'disabled'}>Marquer facturée${ns > 1 ? 's' : ''}</button>` : ''}${factF.etat !== 'non' ? `<button class="linkbtn" data-act2="factMarquer" data-v="0" ${ns ? '' : 'disabled'}>Remettre en non facturée${ns > 1 ? 's' : ''}</button>` : ''}</div><div id="ff_msg"></div></div>
+    <div class="factlist">${vis.map(v => `<label class="frow"><input type="checkbox" data-fsel="${esc(v.id)}" ${factSel.has(v.id) ? 'checked' : ''}><span class="fcol"><span class="l1"><b>${esc(v.client || 'Client sans nom')}</b>${v.facturee_le ? `<span class="st st-ok">Facturée le ${dateFr(v.facturee_le)}</span>` : '<span class="st">Non facturée</span>'}</span>
+      <span>${esc(nomTrame(v.trame))} · <span class="num">${dateFr(v.dr)}</span> · ${esc(donneurDe(v))}</span><span class="admin-note">${esc(v.adresse || '')}</span></span></label>`).join('')}</div>`
+    : `<div class="vide"><b>Aucune visite ${factF.etat === 'non' ? 'à facturer' : factF.etat === 'oui' ? 'facturée' : 'réalisée'} sur cette période</b><span>Change la période ou le client.</span></div>`}`;
+  const all = $('ff_all'); if (all) all.onchange = () => { vis.forEach(v => all.checked ? factSel.add(v.id) : factSel.delete(v.id)); dessinerFact(); };
+  box.querySelectorAll('[data-fsel]').forEach(c => c.onchange = () => { c.checked ? factSel.add(c.dataset.fsel) : factSel.delete(c.dataset.fsel); dessinerFact(); });
+}
+function lignesFact() {
+  return visitesPeriode().filter(v => factSel.has(v.id)).sort((a, b) => a.dr.localeCompare(b.dr))
+    .map(v => [dateFr(v.dr), v.client || '', v.adresse || '', nomTrame(v.trame), donneurDe(v), v.facturee_le ? 'Facturée le ' + dateFr(v.facturee_le) : 'Non facturée']);
+}
+const ENTETES_F = ['Date de visite', 'Client visité', 'Adresse', 'Type de visite', "Donneur d'ordre", 'Facturation'];
+function factCopier() {
+  const txt = [ENTETES_F, ...lignesFact()].map(l => l.map(x => String(x).replace(/[\t\n]/g, ' ')).join('\t')).join('\n');
+  try { navigator.clipboard.writeText(txt).then(() => message('ff_msg', true, 'Lignes copiées', 'Colle-les dans Excel, Google Sheets ou ta facture.'), () => message('ff_msg', false, 'Copie impossible', 'Utilise « Télécharger (Excel) ».')); }
+  catch (e) { message('ff_msg', false, 'Copie impossible', 'Utilise « Télécharger (Excel) ».'); }
+}
+function factCsv() {
+  const csv = '﻿' + [ENTETES_F, ...lignesFact()].map(l => l.map(x => '"' + String(x).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `Visites GESTRAC ${factF.donneur || 'tous clients'} ${today()}.csv`.replace(/[\\/:*?"<>|]/g, '-'); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+async function factMarquer(btn) {
+  const ids = [...factSel], oui = btn.dataset.v === '1'; if (!ids.length) return;
+  btn.disabled = true;
+  try { const r = await api('facturer', { ids, facturee: oui }); liste.forEach(v => { if (factSel.has(v.id)) v.facturee_le = r.facturee_le; }); factSel.clear(); dessinerFact(); toast(`${ids.length} visite${ids.length > 1 ? 's' : ''} marquée${ids.length > 1 ? 's' : ''} ${oui ? 'facturée' : 'non facturée'}${ids.length > 1 ? 's' : ''}.`); }
+  catch (e) { btn.disabled = false; message('ff_msg', false, 'Action impossible', esc(e.message)); }
+}
+Object.assign(ACTIONS_RECRUT, { factCopier, factCsv, factMarquer });
 
 /* ---------- Mission : panneau en tête de la saisie ---------- */
 function missionPanel() {
@@ -1540,23 +1704,30 @@ function missionPanel() {
       <div id="plOut"></div>
       ${dv.demande_commentaire ? `<div class="aide"><b>Consignes</b><br>${nl(dv.demande_commentaire)}</div>` : ''}
       ${V.statut === 'Complément demandé' ? '<div class="warnline">GESTRAC t\'a demandé un complément : regarde l\'e-mail reçu, complète la visite, puis envoie-la à nouveau.</div>' : ''}
-      <span class="admin-note">Remplis la trame sur place. Tout est enregistré au fur et à mesure. À la fin, appuie sur « Envoyer la visite à GESTRAC ».</span></div>`;
+      <span class="admin-note">Remplis la trame sur place. Tout est enregistré au fur et à mesure. À la fin, appuie sur « Envoyer la visite à GESTRAC ».</span></div>
+      ${V.statut === 'En cours' ? '<div class="aide commence">✅ Visite commencée : remplis la trame ci-dessous.</div>' : V.statut !== 'Complément demandé' && !VERROU.includes(V.statut) ? '<div class="commencer"><button class="primary big" data-act="commencer">▶ Commencer la visite</button><span class="admin-note">Appuie ici une fois sur place, au début de la visite.</span></div>' : ''}`;
   }
-  const m = V.mission || {}, R = REFD;
+  const m = V.mission || {}, R = REFD, dv = S().values, tel = dv.tel || m.tel_client || '';
+  if (SANS_P.includes(V.statut)) setTimeout(majDispoMission, 0);
   if (!R) { chargerRef().then(() => { if (vue === 'visite' && mode === 'saisie' && $('missionBox')) $('missionBox').outerHTML = missionPanel(); }).catch(() => {}); }
   const prestas = [['moi', 'Moi (je fais la visite)'], ['', 'À attribuer plus tard'], ...((R && R.prestataires) || []).filter(p => p.actif !== 'non' || p.id === m.prestataire_id).map(p => [p.id, p.nom])];
   const sel = m.prestataire_id || (V.statut === 'À attribuer' ? '' : 'moi');
   const avecPresta = !!m.prestataire_id;
   if (avecPresta && !V.lien) call('lienMission', { id: V.id }).then(r => { V.lien = r.url; }).catch(() => {});
-  return `<div class="panel mission" id="missionBox"><div class="l1"><h3>Mission</h3><span class="st ${stCls(V.statut)}">${esc(V.statut)}</span></div>
-    ${m.client ? `<span>Client : <b>${esc(m.client)}</b></span>` : ''}
+  return `<div class="panel mission" id="missionBox"><div class="l1"><h3>Mission</h3><span class="st ${stCls(V.statut)}">${esc(lib(V.statut))}${m.date_prevue ? ' · prévue le ' + dateFr(m.date_prevue) : ''}</span></div>
+    <div class="coord"><span class="admin-note">Client à visiter</span><b>${esc(dv.client || m.client_final || '—')}</b><span>${esc(dv.adresse || m.chantier || '')}</span>
+      ${tel ? `<div class="telrow"><b class="num">📞 ${esc(tel)}</b><a class="ghost" href="tel:${esc(String(tel).replace(/[^\d+]/g, ''))}">Appeler</a><button class="ghost" data-act="copierTel">Copier</button></div>` : '<span class="warnline">Pas de numéro de téléphone pour ce client. Ajoute-le dans la fiche du chantier (onglet Clients).</span>'}</div>
+    ${m.client ? `<span>Donneur d'ordre : <b>${esc(m.client)}</b></span>` : ''}
+    ${SANS_P.includes(V.statut) ? '<div id="dispoBox" class="dispo"><span class="admin-note">Recherche des techniciens proches…</span></div>' : ''}
     ${S().values.demande_entreprise || S().values.demande_date || S().values.demande_commentaire ? `<div class="aide"><b>Demande reçue du client pro</b>${S().values.demande_entreprise ? `<br>Se présenter au nom de : <b>${esc(S().values.demande_entreprise)}</b>` : ''}${S().values.demande_date ? `<br>Date souhaitée : ${dateFr(S().values.demande_date)}` : ''}${S().values.demande_commentaire ? `<br>${nl(S().values.demande_commentaire)}` : ''}</div>` : ''}
     <div class="grid2"><div class="field"><label for="ms_presta">Prestataire</label><select class="inp" id="ms_presta" data-mission="prestataire_id">${optionsHTML(prestas, sel)}</select></div>
       <div class="field"><label for="ms_date">Date prévue</label><input class="inp" id="ms_date" type="date" data-mission="date_prevue" value="${esc(m.date_prevue || '')}"></div></div>
-    ${avecPresta ? `<div class="btnrow"><button class="primary" data-act="envoyerLien">${V.statut === 'Envoyée' ? 'Renvoyer le lien par e-mail' : 'Envoyer le lien par e-mail'}</button><button class="ghost" data-act="copierLien">Copier le lien</button></div>` : ''}
+    ${avecPresta ? `<div class="btnrow"><button class="primary" data-act="envoyerLien">${V.statut === 'Envoyée' ? 'Renvoyer le lien par e-mail' : 'Envoyer le lien par e-mail'}</button><button class="ghost" data-act="copierLien">Copier le lien</button>${V.statut === 'À envoyer' ? '<button class="linkbtn" data-act="lienManuel">J\'ai envoyé le lien par WhatsApp / SMS</button>' : ''}</div>` : ''}
+    ${infoRelance(m)}
     ${m.prestataire_id && (V.statut === 'Soumise' || FINIS.includes(V.statut)) ? `<div><button class="linkbtn" data-fiche-presta="${esc(m.prestataire_id)}">Noter ${esc(m.prestataire || 'le prestataire')} (facultatif)</button></div>` : ''}
     ${V.statut === 'Soumise' || FINIS.includes(V.statut) ? `<details><summary class="linkbtn">Demander un complément au prestataire</summary><div class="field"><textarea class="inp" id="ms_compl" placeholder="Ex. : il manque 2 photos de la façade arrière et la hauteur du pignon."></textarea><div><button class="ghost" data-act="complement">Envoyer la demande</button></div></div></details>` : ''}
-    <div id="missionOut"></div></div>`;
+    <div id="missionOut"></div>
+    <details id="histo"><summary class="linkbtn">Historique de la mission</summary><div id="histoBox"><span class="admin-note">Chargement…</span></div></details></div>`;
 }
 async function majMission(el) {
   const k = el.dataset.mission, val = el.value;
@@ -1691,8 +1862,8 @@ async function renderPortail(okMsg) {
       <div id="dc_out"></div><button class="primary" data-act2="demander">Envoyer la demande</button>
     </div></section>
     <section class="sec"><h2><span>Mes demandes</span><span class="count">${portail.demandes.length}</span></h2><div class="sec-body">
-      ${portail.demandes.length ? portail.demandes.map(d => `<div class="carte ligne"><span class="l1"><b>${esc(d.client || '—')}</b><span class="st ${d.etat === 'Rapport envoyé' ? 'st-ok' : d.etat === 'Visite réalisée' ? 'st-new' : d.etat === 'Annulée' ? 'st-ko' : ''}">${esc(d.etat)}</span></span><span>${esc(nomTrame(d.trame))}${d.etat === 'Planifiée' && d.date_prevue ? ' · prévue le ' + dateFr(d.date_prevue) : ''}</span><span class="admin-note">${esc(d.adresse)}</span></div>`).join('')
-        : '<span class="admin-note">Vos demandes apparaîtront ici avec leur avancement : reçue, planifiée, visite réalisée, rapport envoyé.</span>'}
+      ${portail.demandes.length ? portail.demandes.map(d => `<div class="carte ligne"><span class="l1"><b>${esc(d.client || '—')}</b><span class="st ${d.etat === 'Rapport généré' || d.etat === 'Rapport envoyé' ? 'st-ok' : d.etat === 'Visite en cours de vérification' || d.etat === 'Visite réalisée' ? 'st-new' : d.etat === 'Annulée' ? 'st-ko' : d.etat === 'Planifié' || d.etat === 'Planifiée' ? 'st-plan' : ''}">${esc(d.etat)}</span></span><span>${esc(nomTrame(d.trame))}</span>${(d.etat === 'Planifié' || d.etat === 'Planifiée') && d.date_prevue ? `<span class="date-visite">Visite prévue le <b>${dateFr(d.date_prevue)}</b></span>` : ''}<span class="admin-note">${esc(d.adresse)}</span></div>`).join('')
+        : '<span class="admin-note">Vos demandes apparaîtront ici avec leur avancement : nouveau, planifié (avec la date de visite), visite en cours de vérification, rapport généré.</span>'}
     </div></section>`;
 }
 async function envoyerDemande(btn) {
@@ -1704,7 +1875,7 @@ async function envoyerDemande(btn) {
 }
 
 /* ---------- Navigation ---------- */
-const ONGLETS = [['missions', 'Missions'], ['recrutement', 'Recrutement'], ['prestataires', 'Prestataires'], ['clients', 'Clients']];
+const ONGLETS = [['missions', 'Missions'], ['recrutement', 'Recrutement'], ['prestataires', 'Prestataires'], ['clients', 'Clients'], ['facturation', 'Facturation']];
 function renderNav() {
   const enVisite = vue === 'visite', vb = $('visitbar'), og = $('onglets');
   vb.hidden = !enVisite;
@@ -1728,6 +1899,7 @@ function render() {
   if (vue === 'clients') return renderClients();
   if (vue === 'prestataires') return renderPrestataires();
   if (vue === 'recrutement') return renderRecrutement();
+  if (vue === 'facturation') return renderFacturation();
   if (!V) return;
   if (PRESTA && VERROU.includes(V.statut)) return renderVerrouille();
   mode === 'saisie' ? renderSaisie() : renderRapport();
@@ -1738,7 +1910,7 @@ $('logoTop').src = LOGO;
 document.body.addEventListener('click', async e => {
   const b = e.target.closest('[data-nav],[data-open],[data-fiche-client],[data-fiche-presta],[data-act2]'); if (!b) return;
   if (b.dataset.act2) { const f = { creerMission, sauverClient, sauverChantier, sauverPresta, lienClientMail: x => lienClient(x, 'mail'), lienClientCopie: x => lienClient(x, 'copie'), lienClientCouper: x => lienClient(x, 'couper'), demander: envoyerDemande, ...ACTIONS_RECRUT }[b.dataset.act2]; return f && f(b); }
-  if (b.dataset.open) { await flush(); return ouvrirVisite(b.dataset.open); }
+  if (b.dataset.open) { if (b.tagName === 'A') e.preventDefault(); await flush(); return ouvrirVisite(b.dataset.open); }
   if (b.dataset.ficheClient !== undefined) { ficheClient = b.dataset.ficheClient || null; vue = 'clients'; render(); return window.scrollTo(0, 0); }
   if (b.dataset.fichePresta !== undefined) { if (b.tagName === 'A') e.preventDefault(); if (vue === 'visite') { await flush(); V = null; liste = null; } fichePresta = b.dataset.fichePresta || null; vue = 'prestataires'; render(); return window.scrollTo(0, 0); }
   const n = b.dataset.nav;
@@ -1782,6 +1954,12 @@ main.addEventListener('click', async e => {
     catch (er) { b.disabled = false; message('plOut', false, 'Date non enregistrée', esc(er.message)); }
     return;
   }
+  if (a === 'commencer') { b.disabled = true; try { const r = await call('commencer', {}); V.statut = r.statut; renderSaisie(); } catch (er) { b.disabled = false; alertePanel(er.message); } return; }
+  if (a === 'copierTel') { const t = S().values.tel || (V.mission || {}).tel_client || ''; try { navigator.clipboard.writeText(t).then(() => message('missionOut', true, 'Numéro copié', esc(t)), () => message('missionOut', true, 'Numéro', esc(t))); } catch (er) { message('missionOut', true, 'Numéro', esc(t)); } return; }
+  if (a === 'lienManuel') { b.disabled = true; try { await api('lienEnvoyeManuel', { id: V.id }); V.statut = 'Envoyée'; V.mission.lien_envoye_le = new Date().toISOString(); V.mission.relance_le = ''; liste = null; renderSaisie(); message('missionOut', true, 'Statut : Lien envoyé', 'La relance automatique part dans 24 h si aucune date n\'est renseignée (le prestataire doit avoir une adresse e-mail).'); } catch (er) { b.disabled = false; message('missionOut', false, 'Action impossible', esc(er.message)); } return; }
+  if (a === 'rayon' || a === 'rayonPerso') { const k = a === 'rayon' ? Number(b.dataset.km) : Number(valeur('rayonPerso')); if (k > 0) { rayonMission[V.id] = k; majDispoMission(); } return; }
+  if (a === 'recherche') { b.disabled = true; try { const r = await api('rechercheLancee', { id: V.id, on: b.dataset.on === '1' }); V.statut = r.statut; liste = null; renderSaisie(); } catch (er) { b.disabled = false; message('missionOut', false, 'Action impossible', esc(er.message)); } return; }
+  if (a === 'choisirP') { b.disabled = true; try { await api('majMission', { id: V.id, prestataire_id: b.dataset.p }); V.mission.prestataire_id = b.dataset.p; V.mission.prestataire = ((REFD.prestataires.find(x => x.id === b.dataset.p)) || {}).nom || ''; V.statut = 'À envoyer'; V.lien = null; liste = null; renderSaisie(); message('missionOut', true, 'Prestataire choisi', 'Envoie-lui le lien par e-mail, ou copie-le pour WhatsApp.'); } catch (er) { b.disabled = false; message('missionOut', false, 'Action impossible', esc(er.message)); } return; }
   if (a === 'sig-effacer') return sigEffacer(b.dataset.qui);
   if (a === 'sig-valider') return sigValider(b.dataset.qui, b);
   if (a === 'sig-refaire') { const [p] = P('sig-' + b.dataset.qui).splice(0); if (p && p.fileId) call('supprimerPhoto', { fileId: p.fileId }).catch(() => {}); save(); return renderSaisie(); }
